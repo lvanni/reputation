@@ -67,7 +67,9 @@ public class Experiment1 extends AbstractExperiment {
 				
 				// THE CONSUMER GIVE A FEEDBACK
 				double feedback = 0.0;
-				while((feedback = randomGenerator.nextDouble()) <= provider.getQoS()){}
+				while((feedback = randomGenerator.nextDouble()) > provider.getQoS()){
+					System.out.println(feedback);
+				}
 				if(AbstractExperiment.LOG_ENABLED == 1) {
 					System.out.println("INFO: " + ((User)consumer).getName() + " give the feedback " + feedback);
 				}
