@@ -56,7 +56,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			return experiences.get(service).get(provider);
 		}
 	}
-		
+
 	@Override
 	public void setConsumerExp(IProvider provider, Service service,
 			Experience experience) {
@@ -68,15 +68,14 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 
 	@Override
 	public IProvider chooseProvider(List<IProvider> providers, Service service, int dataLostPercent) {
+		if (AbstractExperiment.LOG_ENABLED == 1) {
+			System.out.println("INFO: " + getName() + ".chooseProvider("
+					+ service.getName() + ")");
+			System.out.println("INFO: Provider list:");
+			System.out
+			.println("\tId\t\tName\t\tAge\t\tService\t\tQoS\t\tReputation\tStatistic");
+		}
 		if (providers.size() != 0) {
-			if (AbstractExperiment.LOG_ENABLED == 1) {
-				System.out.println("INFO: " + getName() + ".chooseProvider("
-						+ service.getName() + ")");
-				System.out.println("INFO: Provider list:");
-				System.out
-						.println("\tId\t\tName\t\tAge\t\tService\t\tQoS\t\tReputation\tStatistic");
-			}
-
 			// GET ALL THE REPUTATION OF THE PROVIDERS - THEN CREATE THE
 			// ReputedProvider List
 			List<ReputedProvider> reputedProviderList = new ArrayList<ReputedProvider>();
@@ -147,14 +146,14 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 						+ getName()
 						+ " has choosen "
 						+ ((User) reputedProviderList.get(i).getProvider())
-								.getName());
+						.getName());
 			}
 
 			return reputedProviderList.get(i).getProvider();
 		} else {
 			if (AbstractExperiment.LOG_ENABLED == 1) {
 				System.out
-						.println("INFO: no provider for " + service.getName());
+				.println("INFO: no provider for " + service.getName());
 			}
 		}
 		return null;
