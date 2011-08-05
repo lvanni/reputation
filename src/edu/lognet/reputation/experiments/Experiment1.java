@@ -60,11 +60,11 @@ public class Experiment1 extends AbstractExperiment {
 			// THE CONSUMER CHOOSE A PROVIDER
 			IProvider provider = consumer.chooseProvider(providers, service, getDataLostPercent());
 			
-			if(AbstractExperiment.LOG_ENABLED == 1) {
-				System.out.println("INFO: " + ((User)consumer).getName() + " choose provider " + ((User)provider).getName());
-			}
-		
 			if(provider != null) {
+				if(AbstractExperiment.LOG_ENABLED == 1) {
+					System.out.println("INFO: " + ((User)consumer).getName() + " choose provider " + ((User)provider).getName());
+				}
+				
 				// THE CONSUMER GIVE A FEEDBACK
 				double feedback = 0.0;
 				while((feedback = randomGenerator.nextDouble()) <= provider.getQoS()){}
