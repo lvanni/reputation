@@ -19,23 +19,37 @@ public class Interaction {
 	private IConsumer consumer;
 	private Service service;
 	private double feedback;
-	
+	//Thao added
+	private double personalEval;
+	private double estimatedRepScore;
+	private double dataLost;
+	//Thao end
+		
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
-	public Interaction(IProvider provider, IConsumer consumer, Service service, double feedback) {
+	//Thao added
+	public Interaction(IProvider provider, IConsumer consumer, Service service, double feedback, double perEval, double repScore, double dataLost) {
 		this.provider = provider;
 		this.consumer = consumer;
 		this.service = service;
 		this.feedback = feedback;
+		this.personalEval = perEval;
+		this.estimatedRepScore = repScore;
+		this.dataLost = dataLost;
 	}
+	//Thao end
 	
 	/* --------------------------------------------------------- */
 	/* Others Override Methods */
 	/* --------------------------------------------------------- */
 	@Override
 	public String toString() {
-		return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback;
+		//Thao commented
+		//return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback;
+		//Thao added
+		return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback + "\t\t" + personalEval + "\t\t" + estimatedRepScore + "\t\t" + dataLost;
+		//Thao end
 	}
 
 	/* --------------------------------------------------------- */
@@ -71,5 +85,17 @@ public class Interaction {
 
 	public void setFeedback(double feedback) {
 		this.feedback = feedback;
+	}
+
+	public double getDataLost() {
+		return dataLost;
+	}
+
+	public double getPerEval() {
+		return personalEval;
+	}
+
+	public double getEstimatedScore() {
+		return estimatedRepScore;
 	}
 }

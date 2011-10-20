@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.lognet.reputation.model.beans.user.IProvider;
 import edu.lognet.reputation.model.beans.user.IRater;
@@ -42,11 +43,13 @@ public class Service {
 	}
 	
 	public List<IProvider> getProviders(){
-		return providers;
+		List<IProvider> returnProviders = new CopyOnWriteArrayList<IProvider>(providers);
+		return returnProviders;
 	}
 	
 	public List<IRater> getRaters(IProvider provider) {
-		return raters.get(provider);
+		List<IRater> returnRaters = new CopyOnWriteArrayList<IRater>(raters.get(provider));
+		return returnRaters;
 	}
 
 	public void addRater(IProvider provider, IRater rater) {

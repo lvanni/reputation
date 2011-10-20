@@ -6,6 +6,7 @@ import java.util.Map;
 import edu.lognet.reputation.model.beans.experience.Credibility;
 import edu.lognet.reputation.model.beans.experience.Experience;
 import edu.lognet.reputation.model.beans.service.Service;
+import edu.lognet.reputation.model.beans.user.User.collusionGroup;
 
 /**
  * 
@@ -16,10 +17,15 @@ public interface IConsumer {
 	
 	/**
 	 * Choose a provider in a providerList according to his reputation
+	 * @param <ReputedProvider>
 	 * @param providers
+	 * @param choosingStrategy 
+	 * @return 
 	 */
-	public IProvider chooseProvider(List<IProvider> providers, Service service, int dataLostPercent);
-	
+	public IProvider chooseProvider(List<IProvider> providers, Service service,
+			int dataLostPercent,
+			Map<IRater, Credibility> raterList, int choosingStrategy);
+
 	/**
 	 * Get the last experience of the consumer related to a provider in a given service 
 	 * @param provider
@@ -42,4 +48,11 @@ public interface IConsumer {
 	 * @return
 	 */
 	public Map<IRater, Credibility> getCredibilityOfRater(Service service);
+
+	public User.raterType getMyRaterType();
+
+	public double getRatingTol();
+
+	public collusionGroup getCollusionCode();
+
 }

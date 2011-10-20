@@ -1,5 +1,8 @@
 package edu.lognet.reputation.model.beans.user;
 
+import edu.lognet.reputation.model.beans.experience.Experience;
+import edu.lognet.reputation.model.beans.service.Service;
+
 
 
 /**
@@ -10,10 +13,11 @@ package edu.lognet.reputation.model.beans.user;
 public interface IRater {
 	
 	/**
-	 * Get the credibility of the rater in a given service
+	 * Get the rating of the rater in a given service for a certain provider
 	 * @param service
 	 * @return
 	 */
-//	public Credibility getCredibility(Service service);
-
+	//Thao added
+	public Experience getConsumerExp(IProvider provider, Service service);
+	//Thao end
 }

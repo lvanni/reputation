@@ -60,7 +60,12 @@ public class Console {
 					int badUser = Integer.parseInt(in.readLine());
 					System.out.print("Data Lost Percent : ");
 					int dataLost = Integer.parseInt(in.readLine());
-					experiment = new Experiment1(interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost);
+					System.out.print("Choosing strategy : ");
+					System.out.print("\nPress 1 for choosing provider with highest score");
+					System.out.print("\nPress 2 for cropping provider list before choosing randomly on weighted Statistic Factor");
+					System.out.print("\nPress 3 for choosing randomly on weighted Statistic Factor");
+					int choosingStrategy = Integer.parseInt(in.readLine());
+					experiment = new Experiment1(interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, choosingStrategy);
 					System.out.println("INFO: Experiment Created! Ready to start...");
 					break;
 				case 2 : 

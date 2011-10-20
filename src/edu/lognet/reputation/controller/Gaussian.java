@@ -35,9 +35,14 @@ public class Gaussian {
 	 * @return y
 	 */
 	public double getY(double x) {
+		/* Thao commented
+		//Laurent's code
 		return Math.pow(
 				Math.exp(-(((x - mean) * (x - mean)) / ((2 * variance)))),
 				1 / (stdDeviation * Math.sqrt(2 * Math.PI))); // Curve Equation
+		*/
+		return (1 / (stdDeviation * Math.sqrt(2 * Math.PI))*
+				Math.exp(-(((x - mean) * (x - mean)) / ((2 * variance))))); // Curve Equation		
 	}
 
 	/* --------------------------------------------------------- */
@@ -49,7 +54,7 @@ public class Gaussian {
 
 		double[] d = new double[size];
 		double sum = 0.0;
-		Gaussian gaussian = new Gaussian(Math.sqrt(size) / 2, 0.0);
+		Gaussian gaussian = new Gaussian(2, 0.0);
 		for (int x = 0; x < size; x++) {
 			d[x] = gaussian.getY(x) * 100;
 		}

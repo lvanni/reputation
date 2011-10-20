@@ -18,20 +18,22 @@ public abstract class AbstractExperiment implements IExperiment {
 	private int interactionNumber;
 	private int serviceNumber;
 	private int userNumber;
-	private int goodUser; /* feedback > 0.75 */
-	private int badUser; /* feedback < 0.25 */
+	private int goodUser; /*in %, feedback > 0.75 */
+	private int badUser; /*in %, feedback < 0.25 */
+	private int choosingStrategy;
 
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
 	public AbstractExperiment(int interactionNumber, int serviceNumber,
-			int totalUserNumber, int goodUser, int badUser, int dataLostPercent) {
+			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		this.interactionNumber = interactionNumber;
 		this.serviceNumber = serviceNumber;
 		this.userNumber = totalUserNumber;
 		this.goodUser = goodUser;
 		this.badUser = badUser;
 		this.dataLostPercent = dataLostPercent;
+		this.choosingStrategy = choosingStrategy;
 	}
 
 	/* --------------------------------------------------------- */
@@ -61,21 +63,25 @@ public abstract class AbstractExperiment implements IExperiment {
 
 		// start Creating
 		for (int i = 0; i < userNumber; i++) {
-			int age = randomGenerator.nextInt(50) + 18; // user age E [18 ; 68]
+			int age = randomGenerator.nextInt(50) + 18; // user age E [18 ; 68)
+			User.providerType pType;
 			Service service = services.get(randomGenerator
 					.nextInt(serviceNumber));
 			double QoS = 0.0;
 			if (((100 * good) / userNumber) < goodUser) {
 				QoS = (randomGenerator.nextInt(25) + 75.0) / 100;
 				good++;
+				pType = User.providerType.GOOD;
 			} else if (((100 * bad) / userNumber) < badUser) {
 				QoS = (randomGenerator.nextInt(25) + 1.0) / 100;
 				bad++;
+				pType = User.providerType.BAD;
 			} else {
 				QoS = (randomGenerator.nextInt(50) + 25.0) / 100;
+				pType = User.providerType.NORMAL;
 			}
 
-			User user = new User("u" + i, "user" + i, age, service, QoS);
+			User user = new User("u" + i, "user" + i, age, service, pType, QoS);
 			users.add(user);
 
 			// ADD THE USER TO THE PROVIDERS LIST OF THE SERVICE
@@ -108,7 +114,7 @@ public abstract class AbstractExperiment implements IExperiment {
 		this.userNumber = totalUserNumber;
 	}
 
-	public double getGoodUser() {
+	public int getGoodUser() {
 		return goodUser;
 	}
 
@@ -116,7 +122,7 @@ public abstract class AbstractExperiment implements IExperiment {
 		this.goodUser = goodUser;
 	}
 
-	public double getBadUser() {
+	public int getBadUser() {
 		return badUser;
 	}
 
@@ -131,4 +137,9 @@ public abstract class AbstractExperiment implements IExperiment {
 	public void setDataLostPercent(int dataLostPercent) {
 		this.dataLostPercent = dataLostPercent;
 	}
+	
+	public int getChoosingStrategy() {
+		return choosingStrategy;
+	}
+
 }
