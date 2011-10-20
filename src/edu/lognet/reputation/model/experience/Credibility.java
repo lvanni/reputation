@@ -1,8 +1,8 @@
-package edu.lognet.reputation.model.beans.experience;
+package edu.lognet.reputation.model.experience;
 
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.IConsumer;
-import edu.lognet.reputation.model.beans.user.IRater;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IConsumer;
+import edu.lognet.reputation.model.user.IRater;
 
 /**
  * Represent the credibility of a Rater in a given service (for a given

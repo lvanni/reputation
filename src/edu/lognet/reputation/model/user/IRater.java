@@ -1,7 +1,7 @@
-package edu.lognet.reputation.model.beans.user;
+package edu.lognet.reputation.model.user;
 
-import edu.lognet.reputation.model.beans.experience.Experience;
-import edu.lognet.reputation.model.beans.service.Service;
+import edu.lognet.reputation.model.experience.Experience;
+import edu.lognet.reputation.model.service.Service;
 
 
 

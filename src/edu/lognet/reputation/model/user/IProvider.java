@@ -1,8 +1,8 @@
-package edu.lognet.reputation.model.beans.user;
+package edu.lognet.reputation.model.user;
 
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.User.collusionGroup;
-import edu.lognet.reputation.model.beans.user.User.victimGroup;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.User.collusionGroup;
+import edu.lognet.reputation.model.user.User.victimGroup;
 
 /**
  * 

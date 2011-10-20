@@ -1,4 +1,4 @@
-package edu.lognet.reputation.controller;
+package edu.lognet.reputation.controller.core;
 
 import java.util.ArrayList;
 

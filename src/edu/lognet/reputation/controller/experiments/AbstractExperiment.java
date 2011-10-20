@@ -1,13 +1,14 @@
-package edu.lognet.reputation.experiments;
+package edu.lognet.reputation.controller.experiments;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.User;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.User;
 
-public abstract class AbstractExperiment implements IExperiment {
+public abstract class AbstractExperiment {
 
 	/* --------------------------------------------------------- */
 	/* Attributes */
@@ -94,6 +95,11 @@ public abstract class AbstractExperiment implements IExperiment {
 		}
 		return users;
 	}
+	
+	/**
+	 * Start the experiements
+	 */
+	public abstract void start() throws IOException;
 
 	/* --------------------------------------------------------- */
 	/* GETTER & SETTER */

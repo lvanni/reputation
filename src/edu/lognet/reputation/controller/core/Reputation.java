@@ -1,16 +1,16 @@
-package edu.lognet.reputation.controller;
+package edu.lognet.reputation.controller.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.lognet.reputation.model.beans.experience.Credibility;
-import edu.lognet.reputation.model.beans.experience.Experience;
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.IConsumer;
-import edu.lognet.reputation.model.beans.user.IProvider;
-import edu.lognet.reputation.model.beans.user.IRater;
+import edu.lognet.reputation.model.experience.Credibility;
+import edu.lognet.reputation.model.experience.Experience;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IConsumer;
+import edu.lognet.reputation.model.user.IProvider;
+import edu.lognet.reputation.model.user.IRater;
 
 /**
  * 

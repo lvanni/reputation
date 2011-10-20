@@ -1,4 +1,4 @@
-package edu.lognet.reputation.model.beans.service;
+package edu.lognet.reputation.model.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import edu.lognet.reputation.model.beans.user.IProvider;
-import edu.lognet.reputation.model.beans.user.IRater;
+import edu.lognet.reputation.model.user.IProvider;
+import edu.lognet.reputation.model.user.IRater;
 
 /**
  * 

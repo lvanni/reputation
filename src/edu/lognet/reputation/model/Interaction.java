@@ -1,9 +1,9 @@
 package edu.lognet.reputation.model;
 
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.IConsumer;
-import edu.lognet.reputation.model.beans.user.IProvider;
-import edu.lognet.reputation.model.beans.user.User;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IConsumer;
+import edu.lognet.reputation.model.user.IProvider;
+import edu.lognet.reputation.model.user.User;
 
 /**
  * Represent an Interaction One to One (producer/consumer)

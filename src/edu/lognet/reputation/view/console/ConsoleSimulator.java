@@ -4,16 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.lognet.reputation.experiments.AbstractExperiment;
-import edu.lognet.reputation.experiments.Experiment1;
-import edu.lognet.reputation.experiments.IExperiment;
+import edu.lognet.reputation.controller.experiments.AbstractExperiment;
+import edu.lognet.reputation.controller.experiments.Experiment1;
 
 /**
  * 
  * @author lvanni
  * 
  */
-public class Console {
+public class ConsoleSimulator {
 
 	/*
 	 * Starting the Console user interface
@@ -35,7 +34,7 @@ public class Console {
 				+ "           |___/           |_|       										 \n");
 
 		int chx = 0;
-		IExperiment experiment = null;
+		AbstractExperiment experiment = null;
 		while(true){
 			System.out.print("\n\n" +
 					"1) setup \n" +
@@ -61,9 +60,10 @@ public class Console {
 					System.out.print("Data Lost Percent : ");
 					int dataLost = Integer.parseInt(in.readLine());
 					System.out.print("Choosing strategy : ");
-					System.out.print("\nPress 1 for choosing provider with highest score");
-					System.out.print("\nPress 2 for cropping provider list before choosing randomly on weighted Statistic Factor");
-					System.out.print("\nPress 3 for choosing randomly on weighted Statistic Factor");
+					System.out.print("\n\t1) choosing provider with highest score");
+					System.out.print("\n\t2) cropping provider list before choosing randomly on weighted Statistic Factor");
+					System.out.print("\n\t3) choosing randomly on weighted Statistic Factor");
+					System.out.print("\n------> ");
 					int choosingStrategy = Integer.parseInt(in.readLine());
 					experiment = new Experiment1(interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, choosingStrategy);
 					System.out.println("INFO: Experiment Created! Ready to start...");
@@ -87,7 +87,6 @@ public class Console {
 			} catch (NumberFormatException e) {
 				System.out.println("ERR: unknown command!");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

@@ -1,4 +1,4 @@
-package edu.lognet.reputation.model.beans.user;
+package edu.lognet.reputation.model.user;
 
 /**
  * Represent an user into the system

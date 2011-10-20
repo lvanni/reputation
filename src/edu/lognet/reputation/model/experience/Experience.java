@@ -1,4 +1,4 @@
-package edu.lognet.reputation.model.beans.experience;
+package edu.lognet.reputation.model.experience;
 
 
 /**

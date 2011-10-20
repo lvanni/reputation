@@ -1,4 +1,4 @@
-package edu.lognet.reputation.experiments;
+package edu.lognet.reputation.controller.experiments;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import edu.lognet.reputation.controller.Reputation;
+import edu.lognet.reputation.controller.core.Reputation;
 import edu.lognet.reputation.model.Interaction;
-import edu.lognet.reputation.model.beans.experience.Credibility;
-import edu.lognet.reputation.model.beans.experience.Experience;
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.IConsumer;
-import edu.lognet.reputation.model.beans.user.IProvider;
-import edu.lognet.reputation.model.beans.user.IRater;
-import edu.lognet.reputation.model.beans.user.User;
+import edu.lognet.reputation.model.experience.Credibility;
+import edu.lognet.reputation.model.experience.Experience;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IConsumer;
+import edu.lognet.reputation.model.user.IProvider;
+import edu.lognet.reputation.model.user.IRater;
+import edu.lognet.reputation.model.user.User;
 
 /**
  * @author lvanni

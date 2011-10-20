@@ -1,4 +1,4 @@
-package edu.lognet.reputation.model.beans.user;
+package edu.lognet.reputation.model.user;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.lognet.reputation.controller.Gaussian;
-import edu.lognet.reputation.controller.Reputation;
-import edu.lognet.reputation.experiments.AbstractExperiment;
-import edu.lognet.reputation.model.beans.experience.Credibility;
-import edu.lognet.reputation.model.beans.experience.Experience;
-import edu.lognet.reputation.model.beans.service.Service;
+import edu.lognet.reputation.controller.core.Gaussian;
+import edu.lognet.reputation.controller.core.Reputation;
+import edu.lognet.reputation.controller.experiments.AbstractExperiment;
+import edu.lognet.reputation.model.experience.Credibility;
+import edu.lognet.reputation.model.experience.Experience;
+import edu.lognet.reputation.model.service.Service;
 
 
 public class User extends AbstractUser implements IProvider, IConsumer, IRater {
@@ -39,6 +39,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		V2,
 		V3
 	}
+	
 	/* --------------------------------------------------------- */
 	/* Attributes */
 	/* --------------------------------------------------------- */

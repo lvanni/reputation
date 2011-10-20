@@ -1,12 +1,12 @@
-package edu.lognet.reputation.model.beans.user;
+package edu.lognet.reputation.model.user;
 
 import java.util.List;
 import java.util.Map;
 
-import edu.lognet.reputation.model.beans.experience.Credibility;
-import edu.lognet.reputation.model.beans.experience.Experience;
-import edu.lognet.reputation.model.beans.service.Service;
-import edu.lognet.reputation.model.beans.user.User.collusionGroup;
+import edu.lognet.reputation.model.experience.Credibility;
+import edu.lognet.reputation.model.experience.Experience;
+import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.User.collusionGroup;
 
 /**
  * 
