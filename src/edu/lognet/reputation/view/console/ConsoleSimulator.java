@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.lognet.reputation.controller.experiments.AbstractExperiment;
-import edu.lognet.reputation.controller.experiments.Experiment1;
+import edu.lognet.reputation.controller.simulations.Simulation;
+import edu.lognet.reputation.controller.simulations.Simulation1;
 
 /**
  * 
@@ -34,12 +34,12 @@ public class ConsoleSimulator {
 				+ "           |___/           |_|       										 \n");
 
 		int chx = 0;
-		AbstractExperiment experiment = null;
+		Simulation experiment = null;
 		while(true){
 			System.out.print("\n\n" +
 					"1) setup \n" +
 					"2) start \n" +
-					(AbstractExperiment.LOG_ENABLED == 0 ? "3) enable log \n" :  "3) disable log \n") +
+					(Simulation.LOG_ENABLED == 0 ? "3) enable log \n" :  "3) disable log \n") +
 					"4) quit \n"  +
 					"------> ");
 			try {
@@ -65,7 +65,7 @@ public class ConsoleSimulator {
 					System.out.print("\n\t3) choosing randomly on weighted Statistic Factor");
 					System.out.print("\n------> ");
 					int choosingStrategy = Integer.parseInt(in.readLine());
-					experiment = new Experiment1(interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, choosingStrategy);
+					experiment = new Simulation1(interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, choosingStrategy);
 					System.out.println("INFO: Experiment Created! Ready to start...");
 					break;
 				case 2 : 
@@ -77,7 +77,7 @@ public class ConsoleSimulator {
 					}
 					break;
 				case 3 : 
-					AbstractExperiment.LOG_ENABLED = AbstractExperiment.LOG_ENABLED ^ 1;
+					Simulation.LOG_ENABLED = Simulation.LOG_ENABLED ^ 1;
 					break;
 				case 4 :
 					System.out.println("bye bye...");

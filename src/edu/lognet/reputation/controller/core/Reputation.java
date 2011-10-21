@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
@@ -11,6 +12,7 @@ import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.IConsumer;
 import edu.lognet.reputation.model.user.IProvider;
 import edu.lognet.reputation.model.user.IRater;
+import edu.lognet.reputation.model.user.User;
 
 /**
  * 
@@ -356,5 +358,103 @@ public class Reputation {
 				cor.put(rater, credObject);
 			}
 		}
+	}
+	
+	public static double generateFeedback(IConsumer consumer, IProvider provider,
+			double perEval) {
+		if (consumer.getMyRaterType() == User.raterType.HONEST) {
+			return perEval;
+		}
+		double rating;
+		Random randomGenerator = new Random();
+		if (consumer.getMyRaterType() == User.raterType.DISHONEST) {
+			if (perEval > 0.7) {// the provider is supposed to be GOOD
+				rating = Math.max(
+						(double) 0,
+						Math.round(perEval * 100 - consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			} else if (perEval < 0.4) {// BAD provider
+				rating = Math.min(
+						(double) 1,
+						Math.round(perEval * 100 + consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			} else if (randomGenerator.nextBoolean()) {// mean plus for NORMAL
+														// provider
+				rating = Math.min(
+						(double) 1,
+						Math.round(perEval * 100 + consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			} else {// mean minus for NORMAL provider
+				rating = Math.max(
+						(double) 0,
+						Math.round(perEval * 100 - consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			}
+			return rating;
+		} else if (consumer.getMyRaterType() == User.raterType.RANDOM) {// ratingTol=1
+			if (randomGenerator.nextBoolean()) {// mean plus
+				rating = Math.min(
+						(double) 1,
+						Math.round(perEval
+								* 100
+								+ randomGenerator.nextInt((int) (consumer
+										.getRatingTol() * 100)))
+								/ (double) 100);
+			} else {// minus
+				rating = Math.max(
+						(double) 0,
+						Math.round(perEval
+								* 100
+								- randomGenerator.nextInt((int) (consumer
+										.getRatingTol() * 100)))
+								/ (double) 100);
+			}
+			return rating;
+		} else {// =raterType.COLLUSIVE
+			if (consumer.getCollusionCode() == provider.getCollusionCode()) {
+				rating = 1;// give the highest rating to my collusion
+				return rating;
+			}
+			if (provider.getVictimCode() == null) {// not my victim, then be
+													// honest
+				rating = perEval;
+				return rating;
+			}
+			if (consumer.getCollusionCode().ordinal() == provider
+					.getVictimCode().ordinal()) {
+				rating = 0;
+			} else {// telling the truth
+				rating = perEval;
+			}
+			return rating;
+		}
+	}
+
+	public static double generatePerEval(IProvider provider,
+			double observanceTolDefault2) {
+		Random randomGenerator = new Random();
+		double value;
+		if (randomGenerator.nextBoolean()) {
+			value = Math.min(
+					(double) 1,
+					provider.getQoS()
+							+ randomGenerator.nextInt((int) (Math
+									.round(observanceTolDefault2 * 100)))
+							/ (double) 100);
+		} else {
+			value = Math.max(
+					(double) 0,
+					provider.getQoS()
+							- randomGenerator.nextInt((int) (Math
+									.round(observanceTolDefault2 * 100)))
+							/ (double) 100);
+		}
+		// value already has 2 decimal digits
+		double eval = Math.round(value * 100) / (double) 100;
+		return eval;
 	}
 }

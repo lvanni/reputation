@@ -1,31 +1,50 @@
 package edu.lognet.reputation.view.gui;
 
+import java.util.Random;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import edu.lognet.reputation.controller.simulations.Simulation;
+import edu.lognet.reputation.controller.simulations.Simulation2;
+import edu.lognet.reputation.model.user.UserGUIStatus;
+
 public class Simulator {
 
-	private Color red = new Color(null, 255, 0, 0);
-	
+	/* --------------------------------------------------------- */
+	/* Attributes */
+	/* --------------------------------------------------------- */
+	private static final int TIMER_INTERVAL = 100;
+
 	private final Shell shell;
 	private Display display;
-	
-	private final Label address, zip, city, time, separator2, badUser, dataLost;
-	private Text addressText, zipText, cityText, hourText, badUserText, dataLostText;
 
+	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator;
+	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost;
+
+	private Canvas canvas;
+
+	private Runnable runnable;
+
+	private	Simulation2 simulation = null;
+
+	/* --------------------------------------------------------- */
+	/* Constructors */
+	/* --------------------------------------------------------- */
 	public Simulator() {
-		
+
 		display = Display.getDefault();
 		shell = new Shell(display);
 
@@ -37,126 +56,151 @@ public class Simulator {
 		shell.setLayout(layout);
 
 		// Configuration
-		address = new Label(shell, SWT.NONE);
-		address.setText("Interaction Number: ");
+		interactionNumberLabel = new Label(shell, SWT.NONE);
+		interactionNumberLabel.setText("Interaction Number: ");
 		FormData addressFormData = new FormData();
 		addressFormData.top = new FormAttachment(0, 0);
 		addressFormData.left = new FormAttachment(0, 0);
-		address.setLayoutData(addressFormData);
+		interactionNumberLabel.setLayoutData(addressFormData);
 
-		addressText = new Text(shell, SWT.BORDER);
+		interactionNumber = new Text(shell, SWT.BORDER);
 		FormData addressTextFormData = new FormData();
 		addressTextFormData.width = 160;
 		addressTextFormData.height = 15;
 		addressTextFormData.top = new FormAttachment(0, 0);
 		addressTextFormData.left = new FormAttachment(0, 150);
-		addressText.setLayoutData(addressTextFormData);
+		interactionNumber.setLayoutData(addressTextFormData);
 
-		zip = new Label(shell, SWT.NONE);
-		zip.setText("Service Number: ");
+		serviceNumberLabel = new Label(shell, SWT.NONE);
+		serviceNumberLabel.setText("Service Number: ");
 		FormData zipFormData = new FormData();
-		zipFormData.top = new FormAttachment(addressText, 0);
+		zipFormData.top = new FormAttachment(interactionNumber, 0);
 		zipFormData.left = new FormAttachment(0, 0);
-		zip.setLayoutData(zipFormData);
+		serviceNumberLabel.setLayoutData(zipFormData);
 
-		zipText = new Text(shell, SWT.BORDER);
+		serviceNumber = new Text(shell, SWT.BORDER);
 		FormData zipTextFormData = new FormData();
 		zipTextFormData.width = 160;
 		zipTextFormData.height = 15;
-		zipTextFormData.top = new FormAttachment(addressText, 0);
+		zipTextFormData.top = new FormAttachment(interactionNumber, 0);
 		zipTextFormData.left = new FormAttachment(0, 150);
-		zipText.setLayoutData(zipTextFormData);
+		serviceNumber.setLayoutData(zipTextFormData);
 
-		city = new Label(shell, SWT.NONE);
-		city.setText("Total User Number: ");
+		totalUserNumberLabel = new Label(shell, SWT.NONE);
+		totalUserNumberLabel.setText("Total User Number: ");
 		FormData cityFormData = new FormData();
-		cityFormData.top = new FormAttachment(zipText, 0);
+		cityFormData.top = new FormAttachment(serviceNumber, 0);
 		cityFormData.left = new FormAttachment(0, 0);
-		city.setLayoutData(cityFormData);
+		totalUserNumberLabel.setLayoutData(cityFormData);
 
-		cityText = new Text(shell, SWT.BORDER);
+		totalUserNumber = new Text(shell, SWT.BORDER);
 		FormData cityTextFormData = new FormData();
 		cityTextFormData.width = 160;
 		cityTextFormData.height = 15;
-		cityTextFormData.top = new FormAttachment(zipText, 0);
+		cityTextFormData.top = new FormAttachment(serviceNumber, 0);
 		cityTextFormData.left = new FormAttachment(0, 150);
-		cityText.setLayoutData(cityTextFormData);
+		totalUserNumber.setLayoutData(cityTextFormData);
 
-		time = new Label(shell, SWT.NONE);
-		time.setText("Good User (%) : ");
+		goodUserLabel = new Label(shell, SWT.NONE);
+		goodUserLabel.setText("Good User (%) : ");
 		FormData timeFormData = new FormData();
-		timeFormData.top = new FormAttachment(cityText, 0);
+		timeFormData.top = new FormAttachment(totalUserNumber, 0);
 		timeFormData.left = new FormAttachment(0, 0);
-		time.setLayoutData(timeFormData);
+		goodUserLabel.setLayoutData(timeFormData);
 
-		hourText = new Text(shell, SWT.BORDER);
+		goodUser = new Text(shell, SWT.BORDER);
 		FormData hourTextFormData = new FormData();
 		hourTextFormData.width = 160;
 		hourTextFormData.height = 15;
-		hourTextFormData.top = new FormAttachment(cityText, 0);
+		hourTextFormData.top = new FormAttachment(totalUserNumber, 0);
 		hourTextFormData.left = new FormAttachment(0, 150);
-		hourText.setLayoutData(hourTextFormData);
-		
-		badUser = new Label(shell, SWT.NONE);
-		badUser.setText("Bad User (%) : ");
-		FormData badUserFormData = new FormData();
-		badUserFormData.top = new FormAttachment(hourText, 0);
-		badUserFormData.left = new FormAttachment(0, 0);
-		badUser.setLayoutData(badUserFormData);
+		goodUser.setLayoutData(hourTextFormData);
 
-		badUserText = new Text(shell, SWT.BORDER);
+		badUserLabel = new Label(shell, SWT.NONE);
+		badUserLabel.setText("Bad User (%) : ");
+		FormData badUserFormData = new FormData();
+		badUserFormData.top = new FormAttachment(goodUser, 0);
+		badUserFormData.left = new FormAttachment(0, 0);
+		badUserLabel.setLayoutData(badUserFormData);
+
+		badUser = new Text(shell, SWT.BORDER);
 		FormData badUserTextFormData = new FormData();
 		badUserTextFormData.width = 160;
 		badUserTextFormData.height = 15;
-		badUserTextFormData.top = new FormAttachment(hourText, 0);
+		badUserTextFormData.top = new FormAttachment(goodUser, 0);
 		badUserTextFormData.left = new FormAttachment(0, 150);
-		badUserText.setLayoutData(badUserTextFormData);
-		
-		dataLost = new Label(shell, SWT.NONE);
-		dataLost.setText("Data Lost (%) : ");
-		FormData dataLostFormData = new FormData();
-		dataLostFormData.top = new FormAttachment(badUserText, 0);
-		dataLostFormData.left = new FormAttachment(0, 0);
-		dataLost.setLayoutData(dataLostFormData);
+		badUser.setLayoutData(badUserTextFormData);
 
-		dataLostText = new Text(shell, SWT.BORDER);
+		dataLostLabel = new Label(shell, SWT.NONE);
+		dataLostLabel.setText("Data Lost (%) : ");
+		FormData dataLostFormData = new FormData();
+		dataLostFormData.top = new FormAttachment(badUserLabel, 0);
+		dataLostFormData.left = new FormAttachment(0, 0);
+		dataLostLabel.setLayoutData(dataLostFormData);
+
+		dataLost = new Text(shell, SWT.BORDER);
 		FormData dataLostTextFormData = new FormData();
 		dataLostTextFormData.width = 160;
 		dataLostTextFormData.height = 15;
-		dataLostTextFormData.top = new FormAttachment(badUserText, 0);
+		dataLostTextFormData.top = new FormAttachment(badUserLabel, 0);
 		dataLostTextFormData.left = new FormAttachment(0, 150);
-		dataLostText.setLayoutData(dataLostTextFormData);
-		
+		dataLost.setLayoutData(dataLostTextFormData);
+
 		// VIEW
-		final Composite composite = new Composite(shell, SWT.BORDER);
-		FormData compositeFormData = new FormData();
-		compositeFormData.width = 800;
-		compositeFormData.height = 600;
-		compositeFormData.top = new FormAttachment(0, 0);
-		compositeFormData.left = new FormAttachment(0, 400);
-		composite.setLayoutData(compositeFormData);
-		FormLayout compositeFormLayout = new FormLayout();
-		composite.setLayout(compositeFormLayout);
+		canvas = new Canvas(shell, SWT.BORDER);
+		FormData canvasFormData = new FormData();
+		canvasFormData.width = 800;
+		canvasFormData.height = 600;
+		canvasFormData.top = new FormAttachment(0, 0);
+		canvasFormData.left = new FormAttachment(0, 400);
+		canvas.setLayoutData(canvasFormData);
+		canvas.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+
+		canvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent event) {
+				if(simulation != null) {
+					for (UserGUIStatus userGUI : simulation.getUserGUI()) {
+						event.gc.setForeground(event.display.getSystemColor(userGUI.getColor()));
+						event.gc.drawPoint(userGUI.getX(), userGUI.getY());
+					}
+				}
+			}
+		});
 
 		// SEPARATOR
-		separator2 = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL
+		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL
 				| SWT.LINE_SOLID);
 		FormData separator1FormData = new FormData();
 		separator1FormData.width = 380;
-		separator1FormData.top = new FormAttachment(dataLostText, 10);
-		separator2.setLayoutData(separator1FormData);
+		separator1FormData.top = new FormAttachment(dataLost, 10);
+		separator.setLayoutData(separator1FormData);
 
 		// button "SEND"
 		final Button okButton = new Button(shell, SWT.PUSH);
 		okButton.setText("Start");
 		okButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				
+
+				// Create the simulation
+				simulation = new Simulation2(
+						Integer.parseInt(interactionNumber.getText()), 
+						Integer.parseInt(serviceNumber.getText()), 
+						Integer.parseInt(totalUserNumber.getText()), 
+						Integer.parseInt(goodUser.getText()), 
+						Integer.parseInt(badUser.getText()), 
+						Integer.parseInt(dataLost.getText()), 
+						3);
+
+				// Launch the simulation
+				new Thread(simulation).start();
+
+				// Launch the timer
+				display.timerExec(TIMER_INTERVAL, runnable);
 			}
 		});
 		FormData okFormData = new FormData();
 		okFormData.width = 80;
-		okFormData.top = new FormAttachment(separator2, 10);
+		okFormData.top = new FormAttachment(separator, 10);
 		okFormData.left = new FormAttachment(0, 100);
 		okButton.setLayoutData(okFormData);
 		shell.setDefaultButton(okButton);
@@ -166,14 +210,35 @@ public class Simulator {
 		clearButton.setText("Stop");
 		clearButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				display.timerExec(-1, runnable);
 			}
 		});
 		FormData clearFormData = new FormData();
 		clearFormData.width = 80;
-		clearFormData.top = new FormAttachment(separator2, 10);
+		clearFormData.top = new FormAttachment(separator, 10);
 		clearFormData.left = new FormAttachment(okButton, 5);
 		clearButton.setLayoutData(clearFormData);
+
+		// Set up the timer for the animation
+		runnable = new Runnable() {
+			public void run() {
+				animate();
+				display.timerExec(TIMER_INTERVAL, this);
+			}
+		};
+
 		shell.pack();
+	}
+
+	/* --------------------------------------------------------- */
+	/* public Methods */
+	/* --------------------------------------------------------- */
+	/**
+	 * Animates the next frame
+	 */
+	public void animate() {
+		// Force a redraw
+		canvas.redraw();
 	}
 
 	public void start() {
@@ -182,9 +247,13 @@ public class Simulator {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+		display.timerExec(-1, runnable);
 		display.dispose();
 	}
 
+	/* --------------------------------------------------------- */
+	/* main */
+	/* --------------------------------------------------------- */
 	public static void main(String args[]) {
 		new Simulator().start();
 	}

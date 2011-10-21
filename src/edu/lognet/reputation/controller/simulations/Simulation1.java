@@ -1,4 +1,4 @@
-package edu.lognet.reputation.controller.experiments;
+package edu.lognet.reputation.controller.simulations;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -23,141 +23,144 @@ import edu.lognet.reputation.model.user.User;
  * @author lvanni
  */
 
-public class Experiment1 extends AbstractExperiment {
+public class Simulation1 extends Simulation {
 
 	private static double observanceTolDefault = 0.01;// by default, equal to
 
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
-	public Experiment1(int interactionNumber, int serviceNumber,
+	public Simulation1(int interactionNumber, int serviceNumber,
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,
 				badUser, dataLostPercent, choosingStrategy);
 	}
 
 	/* --------------------------------------------------------- */
-	/* Implements IExperiment */
+	/* extends AbstractExperiment */
 	/* --------------------------------------------------------- */
 	/**
-	 * Starting the Experiements
-	 * 
-	 * @throws IOException
+	 * @see Simulation#setup()
 	 */
-	public void start() throws IOException {
+	protected void setup() throws IOException {
+		// CREATE THE SERVICES
+		services = getServiceSet();
+		
+		// CREATE THE USERS
+		users = getUserSet(services);
+	}
+	
+	/**
+	 * @see Simulation#createInteraction(int i)
+	 */
+	protected Interaction createInteraction(int i) {
+		Interaction interaction = null;
+		
 		// CREATE THE RANDOM FACTOR
 		Random randomGenerator = new Random();
+		
+		if (Simulation.LOG_ENABLED == 1) {
+			System.out.println("\nINFO: BEGIN INTRACTION " + (i + 1) + "/"
+					+ getInteractionNumber());
+		}
+		
+		// CHOOSE A RANDOM CONSUMER (AN USER WHO CONSUME A SERVICE)
+		IConsumer consumer = users
+				.get(randomGenerator.nextInt(users.size()));
 
-		// CREATE THE SERVICES
-		List<Service> services = getServiceSet();
+		// CHOOSE A RANDOM SERVICE
+		Service service = services.get(randomGenerator.nextInt(services
+				.size()));
 
-		// CREATE THE USERS
-		List<User> users = getUserSet(services);
+		// GET THE PROVIDER LIST OF THIS SERVICE
+		List<IProvider> providers = service.getProviders();
+		// exclude consumer from the list
+		for (IProvider provider : providers) {
+			if (provider == consumer) {
+				providers.remove(provider);
+			}
+		}
 
+		// THE CONSUMER CHOOSE A PROVIDER
+		Map<IRater, Credibility> raterListOfChosenProvider = new HashMap<IRater, Credibility>();
+		IProvider chosenProvider = consumer.chooseProvider(providers,
+				service, getDataLostPercent(), raterListOfChosenProvider, getChoosingStrategy());
+
+		if (chosenProvider != null) {
+			if (Simulation.LOG_ENABLED == 1) {
+				System.out.println("INFO: " + ((User) consumer).getName()
+						+ " choose provider "
+						+ ((User) chosenProvider).getName());
+			}
+			// COMPUTE RATING DATA LOST
+			List<IRater> raters = service.getRaters(chosenProvider);
+			// exclude consumer from the list
+			for (IRater rater : raters) {
+				if (rater == consumer) {
+					raters.remove(rater);
+				}
+			}
+			double db = raters.size();
+			double dataLost = 0;
+			if (db != 0) {
+				dataLost = 1 - raterListOfChosenProvider.size() / db;
+			}
+			// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FB)
+			double perEval = Reputation.generatePerEval(chosenProvider,
+					observanceTolDefault);
+			double feedback = Reputation.generateFeedback(consumer, chosenProvider,
+					perEval);
+			Experience oldExp = consumer.getConsumerExp(chosenProvider,
+					service);
+			Experience newExp = new Experience(feedback, perEval,
+					chosenProvider.getReputedScore());
+			Experience currentExp = Reputation.adjustExperience(oldExp,
+					newExp);
+			consumer.setConsumerExp(chosenProvider, service, currentExp);
+
+			// ADJUST CREDIBILITY is included in IConsumer.chooseProvider()
+			// but haven't been set
+			// So set adjusted Cred and update useful factors here
+			Reputation.updateUsefulFactor(consumer, service,
+					chosenProvider, raterListOfChosenProvider);
+
+			// UPDATE THE INTERACTION
+			interaction = new Interaction(chosenProvider,
+					consumer, service, currentExp.getFeedback(),
+					currentExp.getPerEval(), currentExp.getPreRepScore(),
+					dataLost);
+
+			// UPDATE THE RATER LIST IF CONSUMER NOT IN
+			boolean exist = false;
+			for (IRater rater : service.getRaters(chosenProvider)) {
+				if (rater == consumer) {
+					exist = true;
+				}
+			}
+			if (!exist) {
+				service.addRater(chosenProvider, (IRater) consumer);
+			}
+			System.out.print("\n interaction: " + interaction + "\n");
+		}
+		
+		if (Simulation.LOG_ENABLED == 1) {
+			System.out.println("INFO: END INTERACTION " + (i + 1) + "/"
+					+ getInteractionNumber());
+		}
+		return interaction;
+	}
+	
+	/**
+	 * @see AbstractExperiment#extractData(List<Interaction> interactions) 
+	 */
+	protected void extractData(List<Interaction> interactions) throws IOException {
 		// CREATE THE RESULT FILE
 		FileWriter fstream = new FileWriter("result.xls");
 		BufferedWriter out = new BufferedWriter(fstream);
 		out.write("ExpParameters \n");
 		out.write("InteractionNum \t ServiceNum \t UserNum \t Good% \t Bad% \t DataLost%");
 		out.write("\n"+getInteractionNumber()+"\t"+getServiceSet().size()+"\t"+getUserNumber()+"\t"+getGoodUser()+"\t"+getBadUser()+"\t"+getDataLostPercent());
-				
-		// Launch the interaction set
-		List<Interaction> interactions = new ArrayList<Interaction>();
-		for (int i = 0; i < getInteractionNumber(); i++) {
-			if (AbstractExperiment.LOG_ENABLED == 1) {
-				System.out.println("\nINFO: BEGIN INTRACTION " + (i + 1) + "/"
-						+ getInteractionNumber());
-			}
-			// CHOOSE A RANDOM CONSUMER (AN USER WHO CONSUME A SERVICE)
-			IConsumer consumer = users
-					.get(randomGenerator.nextInt(users.size()));/*
-																 * get a random
-																 * number in [0,
-																 * size)
-																 */
-
-			// CHOOSE A RANDOM SERVICE
-			Service service = services.get(randomGenerator.nextInt(services
-					.size()));
-
-			// GET THE PROVIDER LIST OF THIS SERVICE
-			List<IProvider> providers = service.getProviders();
-			// exclude consumer from the list
-			for (IProvider provider : providers) {
-				if (provider == consumer) {
-					providers.remove(provider);
-				}
-			}
-
-			// THE CONSUMER CHOOSE A PROVIDER
-			Map<IRater, Credibility> raterListOfChosenProvider = new HashMap<IRater, Credibility>();
-			IProvider chosenProvider = consumer.chooseProvider(providers,
-					service, getDataLostPercent(), raterListOfChosenProvider, getChoosingStrategy());
-
-			if (chosenProvider != null) {
-				if (AbstractExperiment.LOG_ENABLED == 1) {
-					System.out.println("INFO: " + ((User) consumer).getName()
-							+ " choose provider "
-							+ ((User) chosenProvider).getName());
-				}
-				// COMPUTE RATING DATA LOST
-				List<IRater> raters = service.getRaters(chosenProvider);
-				// exclude consumer from the list
-				for (IRater rater : raters) {
-					if (rater == consumer) {
-						raters.remove(rater);
-					}
-				}
-				double db = raters.size();
-				double dataLost = 0;
-				if (db != 0) {
-					dataLost = 1 - raterListOfChosenProvider.size() / db;
-				}
-				// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FB)
-				double perEval = generatePerEval(chosenProvider,
-						observanceTolDefault);
-				double feedback = generateFeedback(consumer, chosenProvider,
-						perEval);
-				Experience oldExp = consumer.getConsumerExp(chosenProvider,
-						service);
-				Experience newExp = new Experience(feedback, perEval,
-						chosenProvider.getReputedScore());
-				Experience currentExp = Reputation.adjustExperience(oldExp,
-						newExp);
-				consumer.setConsumerExp(chosenProvider, service, currentExp);
-
-				// ADJUST CREDIBILITY is included in IConsumer.chooseProvider()
-				// but haven't been set
-				// So set adjusted Cred and update useful factors here
-				Reputation.updateUsefulFactor(consumer, service,
-						chosenProvider, raterListOfChosenProvider);
-
-				// UPDATE THE INTERACTION LIST
-				Interaction interaction = new Interaction(chosenProvider,
-						consumer, service, currentExp.getFeedback(),
-						currentExp.getPerEval(), currentExp.getPreRepScore(),
-						dataLost);
-				interactions.add(interaction);
-
-				// UPDATE THE RATER LIST IF CONSUMER NOT IN
-				boolean exist = false;
-				for (IRater rater : service.getRaters(chosenProvider)) {
-					if (rater == consumer) {
-						exist = true;
-					}
-				}
-				if (!exist) {
-					service.addRater(chosenProvider, (IRater) consumer);
-				}
-				System.out.print("\n interaction: " + interaction + "\n");
-			}
-			
-			if (AbstractExperiment.LOG_ENABLED == 1) {
-				System.out.println("INFO: END INTERACTION " + (i + 1) + "/"
-						+ getInteractionNumber());
-			}
-		}
-
+		
 		// Process UserList & InteractionList to get data for graph
 		int[] numberOfUser = new int[10];
 		int[] numberChosenAsProvider = new int[10];
@@ -358,114 +361,37 @@ public class Experiment1 extends AbstractExperiment {
 					+ "\t" + percentSatisfied[i] + "\t" + percentUnsatisfied[i]);
 		}
 		out.close();
-
+		
 		// PRINT ALL THE INTERACTION
-		if (AbstractExperiment.LOG_ENABLED == 1) {
+		if (Simulation.LOG_ENABLED == 1) {
 			System.out.println("INFO: Interaction List");
 			System.out.println("\tService\t\tProvider\tConsumer\tFeedback");
-			/*
-			 * for(Interaction interaction : interactions){
-			 * System.out.println(interaction); }
-			 */
+			for(Interaction interaction : interactions){
+				System.out.println(interaction); 
+			}
 		}
 	}
-
-	private double generateFeedback(IConsumer consumer, IProvider provider,
-			double perEval) {
-		if (consumer.getMyRaterType() == User.raterType.HONEST) {
-			return perEval;
+	
+	/**
+	 * Starting the Experiements
+	 * 
+	 * @throws IOException
+	 */
+	public void start() throws IOException {
+		// SETUP
+		setup();
+		
+		// COMPUTE
+		List<Interaction> interactions = new ArrayList<Interaction>();
+		for (int i = 0; i < getInteractionNumber(); i++) {
+			Interaction interaction = createInteraction(i);
+			if(interaction != null) {
+				interactions.add(interaction);
+			}
 		}
-		double rating;
-		Random randomGenerator = new Random();
-		if (consumer.getMyRaterType() == User.raterType.DISHONEST) {
-			if (perEval > 0.7) {// the provider is supposed to be GOOD
-				rating = Math.max(
-						(double) 0,
-						Math.round(perEval * 100 - consumer.getRatingTol()
-								* 100)
-								/ (double) 100);
-			} else if (perEval < 0.4) {// BAD provider
-				rating = Math.min(
-						(double) 1,
-						Math.round(perEval * 100 + consumer.getRatingTol()
-								* 100)
-								/ (double) 100);
-			} else if (randomGenerator.nextBoolean()) {// mean plus for NORMAL
-														// provider
-				rating = Math.min(
-						(double) 1,
-						Math.round(perEval * 100 + consumer.getRatingTol()
-								* 100)
-								/ (double) 100);
-			} else {// mean minus for NORMAL provider
-				rating = Math.max(
-						(double) 0,
-						Math.round(perEval * 100 - consumer.getRatingTol()
-								* 100)
-								/ (double) 100);
-			}
-			return rating;
-		} else if (consumer.getMyRaterType() == User.raterType.RANDOM) {// ratingTol=1
-			if (randomGenerator.nextBoolean()) {// mean plus
-				rating = Math.min(
-						(double) 1,
-						Math.round(perEval
-								* 100
-								+ randomGenerator.nextInt((int) (consumer
-										.getRatingTol() * 100)))
-								/ (double) 100);
-			} else {// minus
-				rating = Math.max(
-						(double) 0,
-						Math.round(perEval
-								* 100
-								- randomGenerator.nextInt((int) (consumer
-										.getRatingTol() * 100)))
-								/ (double) 100);
-			}
-			return rating;
-		} else {// =raterType.COLLUSIVE
-			if (consumer.getCollusionCode() == provider.getCollusionCode()) {
-				rating = 1;// give the highest rating to my collusion
-				return rating;
-			}
-			if (provider.getVictimCode() == null) {// not my victim, then be
-													// honest
-				rating = perEval;
-				return rating;
-			}
-			if (consumer.getCollusionCode().ordinal() == provider
-					.getVictimCode().ordinal()) {
-				rating = 0;
-			} else {// telling the truth
-				rating = perEval;
-			}
-			return rating;
-		}
-	}
-
-	private double generatePerEval(IProvider provider,
-			double observanceTolDefault2) {
-		Random randomGenerator = new Random();
-		double value;
-		if (randomGenerator.nextBoolean()) {
-			value = Math.min(
-					(double) 1,
-					provider.getQoS()
-							+ randomGenerator.nextInt((int) (Math
-									.round(observanceTolDefault2 * 100)))
-							/ (double) 100);
-		} else {
-			value = Math.max(
-					(double) 0,
-					provider.getQoS()
-							- randomGenerator.nextInt((int) (Math
-									.round(observanceTolDefault2 * 100)))
-							/ (double) 100);
-		}
-		// value already has 2 decimal digits
-		double eval = Math.round(value * 100) / (double) 100;
-		return eval;
+		
+		// PRINT RESULT
+		extractData(interactions);
 	}
 
 }

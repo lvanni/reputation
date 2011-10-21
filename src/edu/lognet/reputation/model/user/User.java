@@ -8,7 +8,7 @@ import java.util.Map;
 
 import edu.lognet.reputation.controller.core.Gaussian;
 import edu.lognet.reputation.controller.core.Reputation;
-import edu.lognet.reputation.controller.experiments.AbstractExperiment;
+import edu.lognet.reputation.controller.simulations.Simulation;
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
 import edu.lognet.reputation.model.service.Service;
@@ -55,7 +55,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	private Integer resourceAvail;///////
 	private double initialQoS;///////////
 	private double ratingTol;
-
+	
 	//Thao added
 	//Experience includes rating, besides perEval & Timestamp
 	//Credibility includes raters' info: cred, usefulnessFactors, and numberSubmissions
@@ -138,7 +138,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	@Override
 	public IProvider chooseProvider(List<IProvider> providers, Service service, int dataLostPercent, Map<IRater, Credibility> acceptedRaterSet, int choosingStrategy) {
 		//acceptedRaterSet is used to store raterSet for the chosen provider
-		if (AbstractExperiment.LOG_ENABLED == 1) {
+		if (Simulation.LOG_ENABLED == 1) {
 			System.out.println("INFO: " + getName() + ".chooseProvider("
 					+ service.getName() + ")");
 			System.out.println("INFO: Provider list:");
@@ -242,7 +242,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				}
 
 				// LOG
-				if (AbstractExperiment.LOG_ENABLED == 1) {
+				if (Simulation.LOG_ENABLED == 1) {
 					for (ReputedProvider reputedProvider : croppedProvList) {
 						System.out.println(reputedProvider);
 					}
@@ -271,7 +271,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 					}
 					size /= 2;
 				}
-				if (AbstractExperiment.LOG_ENABLED == 1) {
+				if (Simulation.LOG_ENABLED == 1) {
 					System.out.println("INFO: "
 							+ getName()
 							+ " has choosen "
@@ -304,7 +304,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				}
 
 				// LOG
-				if (AbstractExperiment.LOG_ENABLED == 1) {
+				if (Simulation.LOG_ENABLED == 1) {
 					for (ReputedProvider reputedProvider : reputedProviderList) {
 						System.out.println(reputedProvider);
 					}
@@ -333,7 +333,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 					}
 					size /= 2;
 				}
-				if (AbstractExperiment.LOG_ENABLED == 1) {
+				if (Simulation.LOG_ENABLED == 1) {
 					System.out.println("INFO: "
 							+ getName()
 							+ " has choosen "
@@ -354,7 +354,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			chosenProvider.setReputedScore(db);//bring out the functions of ReputedProvider to IProvider
 			acceptedRaterSet.putAll(tempRaterSetTable.get(chosenProvider));			
 		} else {
-			if (AbstractExperiment.LOG_ENABLED == 1) {
+			if (Simulation.LOG_ENABLED == 1) {
 				System.out
 				.println("INFO: no provider for " + service.getName());
 			}
@@ -480,6 +480,14 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	@Override
 	public victimGroup getVictimCode() {
 		return victimCode;
+	}
+
+	public providerType getMyProviderType() {
+		return myProviderType;
+	}
+
+	public void setMyProviderType(providerType myProviderType) {
+		this.myProviderType = myProviderType;
 	}
 	
 }
