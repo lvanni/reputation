@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import edu.lognet.reputation.controller.simulations.Simulation;
-import edu.lognet.reputation.controller.simulations.Simulation1;
+import edu.lognet.reputation.controller.simulations.simulation1.Simulation1;
 
 /**
  * 

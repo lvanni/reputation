@@ -1,6 +1,6 @@
 package edu.lognet.reputation.view.gui;
 
-import java.util.Random;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -17,16 +17,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import edu.lognet.reputation.controller.simulations.Simulation;
-import edu.lognet.reputation.controller.simulations.Simulation2;
-import edu.lognet.reputation.model.user.UserGUIStatus;
+import edu.lognet.reputation.controller.simulations.simulation2.Simulation2;
+import edu.lognet.reputation.controller.simulations.simulation2.UserGUIStatus;
 
 public class Simulator {
 
 	/* --------------------------------------------------------- */
 	/* Attributes */
 	/* --------------------------------------------------------- */
-	private static final int TIMER_INTERVAL = 100;
+	private static final int TIMER_INTERVAL = 500;
 
 	private final Shell shell;
 	private Display display;
@@ -79,27 +78,29 @@ public class Simulator {
 		serviceNumberLabel.setLayoutData(zipFormData);
 
 		serviceNumber = new Text(shell, SWT.BORDER);
-		FormData zipTextFormData = new FormData();
-		zipTextFormData.width = 160;
-		zipTextFormData.height = 15;
-		zipTextFormData.top = new FormAttachment(interactionNumber, 0);
-		zipTextFormData.left = new FormAttachment(0, 150);
-		serviceNumber.setLayoutData(zipTextFormData);
+		FormData serviceNumberFormData = new FormData();
+		serviceNumberFormData.width = 160;
+		serviceNumberFormData.height = 15;
+		serviceNumberFormData.top = new FormAttachment(interactionNumber, 0);
+		serviceNumberFormData.left = new FormAttachment(0, 150);
+		serviceNumber.setLayoutData(serviceNumberFormData);
 
 		totalUserNumberLabel = new Label(shell, SWT.NONE);
 		totalUserNumberLabel.setText("Total User Number: ");
-		FormData cityFormData = new FormData();
-		cityFormData.top = new FormAttachment(serviceNumber, 0);
-		cityFormData.left = new FormAttachment(0, 0);
-		totalUserNumberLabel.setLayoutData(cityFormData);
+		FormData totalUserNumberLabelFormData = new FormData();
+		totalUserNumberLabelFormData.top = new FormAttachment(serviceNumber, 0);
+		totalUserNumberLabelFormData.left = new FormAttachment(0, 0);
+		totalUserNumberLabel.setLayoutData(totalUserNumberLabelFormData);
 
 		totalUserNumber = new Text(shell, SWT.BORDER);
-		FormData cityTextFormData = new FormData();
-		cityTextFormData.width = 160;
-		cityTextFormData.height = 15;
-		cityTextFormData.top = new FormAttachment(serviceNumber, 0);
-		cityTextFormData.left = new FormAttachment(0, 150);
-		totalUserNumber.setLayoutData(cityTextFormData);
+		totalUserNumber.setEnabled(false);
+		totalUserNumber.setText("100000");
+		FormData totalUserNumberFormData = new FormData();
+		totalUserNumberFormData.width = 160;
+		totalUserNumberFormData.height = 15;
+		totalUserNumberFormData.top = new FormAttachment(serviceNumber, 0);
+		totalUserNumberFormData.left = new FormAttachment(0, 150);
+		totalUserNumber.setLayoutData(totalUserNumberFormData);
 
 		goodUserLabel = new Label(shell, SWT.NONE);
 		goodUserLabel.setText("Good User (%) : ");
@@ -134,7 +135,7 @@ public class Simulator {
 		dataLostLabel = new Label(shell, SWT.NONE);
 		dataLostLabel.setText("Data Lost (%) : ");
 		FormData dataLostFormData = new FormData();
-		dataLostFormData.top = new FormAttachment(badUserLabel, 0);
+		dataLostFormData.top = new FormAttachment(badUser, 0);
 		dataLostFormData.left = new FormAttachment(0, 0);
 		dataLostLabel.setLayoutData(dataLostFormData);
 
@@ -142,15 +143,15 @@ public class Simulator {
 		FormData dataLostTextFormData = new FormData();
 		dataLostTextFormData.width = 160;
 		dataLostTextFormData.height = 15;
-		dataLostTextFormData.top = new FormAttachment(badUserLabel, 0);
+		dataLostTextFormData.top = new FormAttachment(badUser, 0);
 		dataLostTextFormData.left = new FormAttachment(0, 150);
 		dataLost.setLayoutData(dataLostTextFormData);
 
 		// VIEW
 		canvas = new Canvas(shell, SWT.BORDER);
 		FormData canvasFormData = new FormData();
-		canvasFormData.width = 800;
-		canvasFormData.height = 600;
+		canvasFormData.width = 400;
+		canvasFormData.height = 400;
 		canvasFormData.top = new FormAttachment(0, 0);
 		canvasFormData.left = new FormAttachment(0, 400);
 		canvas.setLayoutData(canvasFormData);
@@ -159,9 +160,12 @@ public class Simulator {
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent event) {
 				if(simulation != null) {
-					for (UserGUIStatus userGUI : simulation.getUserGUI()) {
-						event.gc.setForeground(event.display.getSystemColor(userGUI.getColor()));
-						event.gc.drawPoint(userGUI.getX(), userGUI.getY());
+					Map <String, UserGUIStatus> userGUIStatus = simulation.getUserGUIList();
+					for (String userId : userGUIStatus.keySet()) {
+						UserGUIStatus userGUI = userGUIStatus.get(userId);
+						event.gc.setBackground(event.display.getSystemColor(userGUI.getColor()));
+//						event.gc.drawPoint(userGUI.getX(), userGUI.getY());
+						event.gc.fillRectangle(userGUI.getX(), userGUI.getY(), 4, 4);
 					}
 				}
 			}

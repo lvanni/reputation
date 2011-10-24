@@ -1,10 +1,11 @@
-package edu.lognet.reputation.controller.simulations;
+package edu.lognet.reputation.controller.simulations.simulation2;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import edu.lognet.reputation.model.user.UserGUIStatus;
+import edu.lognet.reputation.controller.simulations.Simulation;
+import edu.lognet.reputation.controller.simulations.simulation1.Simulation1;
 
 /**
  * @author lvanni
@@ -12,7 +13,7 @@ import edu.lognet.reputation.model.user.UserGUIStatus;
 
 public class Simulation2 extends Simulation1 implements Runnable {
 
-	private List<UserGUIStatus> userGUI;
+	private Map<String, UserGUIStatus> userGUI;
 	private int squareSize;
 
 	/* --------------------------------------------------------- */
@@ -22,7 +23,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,
 				badUser, dataLostPercent, choosingStrategy);
-		userGUI = new ArrayList<UserGUIStatus>();
+		userGUI = new HashMap<String, UserGUIStatus>();
 		squareSize = 0;
 	}
 	
@@ -42,9 +43,9 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		// Draw all the user into a square
 		squareSize = (int) Math.sqrt(getUserNumber());
 		int i = 0; 
-		for(int x = 0 ; x < squareSize ; x++) {
-			for(int y = 0 ; y < squareSize ; y++) {
-				userGUI.add(new UserGUIStatus(users.get(i), x, y));
+		for(int x = 0 ; x < squareSize ; x = x+4) {
+			for(int y = 0 ; y < squareSize ; y = y+4) {
+				putUserGUI(new UserGUIStatus(users.get(i), x, y));
 				i++;
 			}
 		}
@@ -61,11 +62,15 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		}
 	}
 
-	public List<UserGUIStatus> getUserGUI() {
-		return userGUI;
+	public synchronized Map<String, UserGUIStatus> getUserGUIList() {
+		return new HashMap<String, UserGUIStatus>(userGUI);
+	}
+	
+	public synchronized UserGUIStatus getUserGUI(String userID) {
+		return new UserGUIStatus(userGUI.get(userID));
 	}
 
-	public void setUserGUI(List<UserGUIStatus> userGUI) {
-		this.userGUI = userGUI;
+	public synchronized void putUserGUI(UserGUIStatus userGUI) {
+		this.userGUI.put(userGUI.getUser().getId(), userGUI);
 	}
 }

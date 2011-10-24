@@ -73,22 +73,34 @@ public abstract class Simulation {
 			Service service = services.get(randomGenerator
 					.nextInt(serviceNumber));
 			double QoS = 0.0;
-			if (((100 * good) / userNumber) < goodUser) {
+			
+//			if (((100 * good) / userNumber) < goodUser) {
+//				QoS = (randomGenerator.nextInt(25) + 75.0) / 100;
+//				good++;
+//				pType = User.providerType.GOOD;
+//			} else if (((100 * bad) / userNumber) < badUser) {
+//				QoS = (randomGenerator.nextInt(25) + 1.0) / 100;
+//				bad++;
+//				pType = User.providerType.BAD;
+//			} else {
+//				QoS = (randomGenerator.nextInt(50) + 25.0) / 100;
+//				pType = User.providerType.NORMAL;
+//			}
+			
+			int rand = randomGenerator.nextInt(100);
+			if(rand < goodUser) {
 				QoS = (randomGenerator.nextInt(25) + 75.0) / 100;
-				good++;
 				pType = User.providerType.GOOD;
-			} else if (((100 * bad) / userNumber) < badUser) {
+			} else if (rand >= goodUser && rand < goodUser + badUser) {
 				QoS = (randomGenerator.nextInt(25) + 1.0) / 100;
-				bad++;
 				pType = User.providerType.BAD;
 			} else {
 				QoS = (randomGenerator.nextInt(50) + 25.0) / 100;
 				pType = User.providerType.NORMAL;
 			}
-
 			User user = new User("u" + i, "user" + i, age, service, pType, QoS);
 			users.add(user);
-
+			
 			// ADD THE USER TO THE PROVIDERS LIST OF THE SERVICE
 			service.addProdiver(user);
 

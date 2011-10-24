@@ -1,4 +1,4 @@
-package edu.lognet.reputation.controller.simulations;
+package edu.lognet.reputation.controller.simulations.simulation1;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 import edu.lognet.reputation.controller.core.Reputation;
+import edu.lognet.reputation.controller.simulations.Simulation;
 import edu.lognet.reputation.model.Interaction;
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
