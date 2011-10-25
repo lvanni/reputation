@@ -26,14 +26,15 @@ public class Simulator {
 	/* Attributes */
 	/* --------------------------------------------------------- */
 	private static final int TIMER_INTERVAL = 100;
-	public static final int SIMULATION_SIZE = 500;
+	public static final int SIMULATION_SIZE = 800;
 	public static final int SIMULATION_PRECISION = 4;
 
 	private final Shell shell;
 	private Display display;
 
-	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator;
-	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost;
+	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel;
+	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, counter;
+	private final Button strategy1, strategy2, strategy3;
 
 	private Canvas canvas;
 
@@ -148,6 +149,55 @@ public class Simulator {
 		dataLostTextFormData.top = new FormAttachment(badUser, 0);
 		dataLostTextFormData.left = new FormAttachment(0, 150);
 		dataLost.setLayoutData(dataLostTextFormData);
+		
+		// CHECKBOX
+		strategy1 = new Button(shell, SWT.CHECK);
+		strategy1.setSelection(true);
+		strategy1.setText("strategy1");
+		strategy1.setSelection(true);
+		FormData strategy1FormData = new FormData();
+		strategy1FormData.top = new FormAttachment(dataLost, 0);
+		strategy1FormData.left = new FormAttachment(0, 0);
+		strategy1.setLayoutData(strategy1FormData);
+		strategy1.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				strategy1.setSelection(true);
+				strategy2.setSelection(false);
+				strategy3.setSelection(false);
+			}
+		});
+		
+		strategy2 = new Button(shell, SWT.CHECK);
+		strategy2.setSelection(true);
+		strategy2.setText("strategy2");
+		strategy2.setSelection(false);
+		FormData strategy2FormData = new FormData();
+		strategy2FormData.top = new FormAttachment(strategy1, 0);
+		strategy2FormData.left = new FormAttachment(0, 0);
+		strategy2.setLayoutData(strategy2FormData);
+		strategy2.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				strategy1.setSelection(false);
+				strategy2.setSelection(true);
+				strategy3.setSelection(false);
+			}
+		});
+		
+		strategy3 = new Button(shell, SWT.CHECK);
+		strategy3.setSelection(true);
+		strategy3.setText("strategy3");
+		strategy3.setSelection(false);
+		FormData strategy3FormData = new FormData();
+		strategy3FormData.top = new FormAttachment(strategy2, 0);
+		strategy3FormData.left = new FormAttachment(0, 0);
+		strategy3.setLayoutData(strategy3FormData);
+		strategy3.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				strategy1.setSelection(false);
+				strategy2.setSelection(false);
+				strategy3.setSelection(true);
+			}
+		});
 
 		// VIEW
 		canvas = new Canvas(shell, SWT.BORDER);
@@ -162,6 +212,7 @@ public class Simulator {
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent event) {
 				if(simulation != null) {
+					counter.setText(simulation.getInteractionCount() + "");
 					Map <String, UserGUIStatus> userGUIStatus = simulation.getUserGUIList();
 					for (String userId : userGUIStatus.keySet()) {
 						UserGUIStatus userGUI = userGUIStatus.get(userId);
@@ -178,8 +229,25 @@ public class Simulator {
 				| SWT.LINE_SOLID);
 		FormData separator1FormData = new FormData();
 		separator1FormData.width = 380;
-		separator1FormData.top = new FormAttachment(dataLost, 10);
+		separator1FormData.top = new FormAttachment(strategy3, 10);
 		separator.setLayoutData(separator1FormData);
+		
+		counterLabel = new Label(shell, SWT.NONE);
+		counterLabel.setText("counter : ");
+		FormData counterLabelFormData = new FormData();
+		counterLabelFormData.top = new FormAttachment(separator, 0);
+		counterLabelFormData.left = new FormAttachment(0, 0);
+		counterLabel.setLayoutData(counterLabelFormData);
+
+		counter = new Text(shell, SWT.BORDER);
+		counter.setText("0");
+		counter.setEditable(false);
+		FormData counterFormData = new FormData();
+		counterFormData.width = 160;
+		counterFormData.height = 15;
+		counterFormData.top = new FormAttachment(separator, 0);
+		counterFormData.left = new FormAttachment(0, 150);
+		counter.setLayoutData(counterFormData);
 
 		// button "SEND"
 		final Button okButton = new Button(shell, SWT.PUSH);
@@ -187,6 +255,13 @@ public class Simulator {
 		okButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 
+				int strategy = 1;
+				if(strategy2.getSelection()){
+					strategy = 2;
+				} else if(strategy3.getSelection()){
+					strategy = 3;
+				}
+				
 				// Create the simulation
 				simulation = new Simulation2(
 						Integer.parseInt(interactionNumber.getText()), 
@@ -195,7 +270,7 @@ public class Simulator {
 						Integer.parseInt(goodUser.getText()), 
 						Integer.parseInt(badUser.getText()), 
 						Integer.parseInt(dataLost.getText()), 
-						3);
+						strategy);
 
 				// Launch the simulation
 				new Thread(simulation).start();
@@ -206,7 +281,7 @@ public class Simulator {
 		});
 		FormData okFormData = new FormData();
 		okFormData.width = 80;
-		okFormData.top = new FormAttachment(separator, 10);
+		okFormData.top = new FormAttachment(counter, 10);
 		okFormData.left = new FormAttachment(0, 100);
 		okButton.setLayoutData(okFormData);
 		shell.setDefaultButton(okButton);
@@ -221,7 +296,7 @@ public class Simulator {
 		});
 		FormData clearFormData = new FormData();
 		clearFormData.width = 80;
-		clearFormData.top = new FormAttachment(separator, 10);
+		clearFormData.top = new FormAttachment(counter, 10);
 		clearFormData.left = new FormAttachment(okButton, 5);
 		clearButton.setLayoutData(clearFormData);
 
