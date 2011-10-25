@@ -136,12 +136,13 @@ public class Simulation1 extends Simulation {
 			for (IRater rater : service.getRaters(chosenProvider)) {
 				if (rater == consumer) {
 					exist = true;
+					break;
 				}
 			}
 			if (!exist) {
 				service.addRater(chosenProvider, (IRater) consumer);
 			}
-			System.out.print("\n interaction: " + interaction + "\n");
+//			System.out.print("\n interaction: " + interaction + "\n");
 		}
 		
 		if (Simulation.LOG_ENABLED == 1) {

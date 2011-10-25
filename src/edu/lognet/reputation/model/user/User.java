@@ -157,7 +157,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				//raters always != null, has been initiated
 				List<IRater> raters = service.getRaters(provider);
 				// DATA LOST PERCENT
-				System.out.print("\n"+provider + "\n" + "Rater before: " + raters);
+//				System.out.print("\n"+provider + "\n" + "Rater before: " + raters);
 				for(IRater rater : raters) {
 					//Thao added
 					//Remove me from rater list
@@ -173,7 +173,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 					}
 					*/
 				}
-				System.out.print("\n"+"Rater after: " + raters);
+//				System.out.print("\n"+"Rater after: " + raters);
 				tempRaterSetTable.put(provider, new HashMap<IRater, Credibility>());
 				//Thao added
 				//adjustCred() is already included in getRep() and cor here is old cor, should not be touched.
@@ -189,7 +189,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			}
 			// SORT THE ReputedProvider LIST into ascending order, equal relation is kept
 			Collections.sort(reputedProviderList);
-			System.out.print("\n"+reputedProviderList+"\n");
+//			System.out.print("\n"+reputedProviderList+"\n");
 			
 			double db;
 			int size = reputedProviderList.size();//size>0
@@ -219,7 +219,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				
 				//apply Gaussian to croppedProvList
 				size = croppedProvList.size();
-				System.out.print("\n"+croppedProvList+"\n");
+//				System.out.print("\n"+croppedProvList+"\n");
 				
 				// UPDATE THE STATISTIC FACTOR OF EACH PROVIDER
 				Gaussian gaussian = new Gaussian(Math.sqrt(size) / 2, 0.0);
@@ -256,7 +256,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				while (size != 0) {
 					if (croppedProvList.get(i).getStatisticFactor() == statisticFactor) {
 						//Thao test
-						System.out.print("\n equal random");
+//						System.out.print("\n equal random");
 						//Thao end
 						break;
 					} else if (croppedProvList.get(i).getStatisticFactor() < statisticFactor) {
@@ -318,7 +318,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				while (size != 0) {
 					if (reputedProviderList.get(i).getStatisticFactor() == statisticFactor) {
 						//Thao test
-						System.out.print("\n equal random");
+//						System.out.print("\n equal random");
 						//Thao end
 						break;
 					} else if (reputedProviderList.get(i).getStatisticFactor() < statisticFactor) {

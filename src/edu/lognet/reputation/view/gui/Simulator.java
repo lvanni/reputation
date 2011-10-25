@@ -25,7 +25,9 @@ public class Simulator {
 	/* --------------------------------------------------------- */
 	/* Attributes */
 	/* --------------------------------------------------------- */
-	private static final int TIMER_INTERVAL = 500;
+	private static final int TIMER_INTERVAL = 100;
+	public static final int SIMULATION_SIZE = 500;
+	public static final int SIMULATION_PRECISION = 4;
 
 	private final Shell shell;
 	private Display display;
@@ -94,7 +96,7 @@ public class Simulator {
 
 		totalUserNumber = new Text(shell, SWT.BORDER);
 		totalUserNumber.setEnabled(false);
-		totalUserNumber.setText("100000");
+		totalUserNumber.setText((SIMULATION_SIZE/Simulator.SIMULATION_PRECISION) * (SIMULATION_SIZE/Simulator.SIMULATION_PRECISION) + "");
 		FormData totalUserNumberFormData = new FormData();
 		totalUserNumberFormData.width = 160;
 		totalUserNumberFormData.height = 15;
@@ -150,8 +152,8 @@ public class Simulator {
 		// VIEW
 		canvas = new Canvas(shell, SWT.BORDER);
 		FormData canvasFormData = new FormData();
-		canvasFormData.width = 400;
-		canvasFormData.height = 400;
+		canvasFormData.width = SIMULATION_SIZE;
+		canvasFormData.height = SIMULATION_SIZE;
 		canvasFormData.top = new FormAttachment(0, 0);
 		canvasFormData.left = new FormAttachment(0, 400);
 		canvas.setLayoutData(canvasFormData);
@@ -165,7 +167,7 @@ public class Simulator {
 						UserGUIStatus userGUI = userGUIStatus.get(userId);
 						event.gc.setBackground(event.display.getSystemColor(userGUI.getColor()));
 //						event.gc.drawPoint(userGUI.getX(), userGUI.getY());
-						event.gc.fillRectangle(userGUI.getX(), userGUI.getY(), 4, 4);
+						event.gc.fillRectangle(userGUI.getX(), userGUI.getY(), SIMULATION_PRECISION, SIMULATION_PRECISION);
 					}
 				}
 			}

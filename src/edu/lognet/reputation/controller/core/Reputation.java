@@ -116,10 +116,10 @@ public class Reputation {
 			}	
 			raterArray[i] = (IRater) consumer;
 			IRater[] sortedArray = mergeSort(raterArray, service, provider, consumer);
-			System.out.print("\nLength="+sortedArray.length);
+//			System.out.print("\nLength="+sortedArray.length);
 			for (int j = 0; j < sortedArray.length; j++) {
 				temp = 1 / ((double) j + 1);
-				System.out.print("\nElement="+sortedArray[j] + "\ntemp="+temp + "\n");
+//				System.out.print("\nElement="+sortedArray[j] + "\ntemp="+temp + "\n");
 				temporalFactor.put(sortedArray[j], temp);
 			}
 		} else {
@@ -129,10 +129,10 @@ public class Reputation {
 				i++;
 			}			
 			IRater[] sortedArray = mergeSort(raterArray, service, provider, consumer);
-			System.out.print("\nLength="+sortedArray.length);
+//			System.out.print("\nLength="+sortedArray.length);
 			for (int j = 0; j < sortedArray.length; j++) {
 				temp = 1 / ((double) j + 1);
-				System.out.print("\nElement="+sortedArray[j] + "\ntemp="+temp + "\n");
+//				System.out.print("\nElement="+sortedArray[j] + "\ntemp="+temp + "\n");
 				temporalFactor.put(sortedArray[j], temp);
 			}
 		}		
