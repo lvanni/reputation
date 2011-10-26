@@ -18,6 +18,7 @@ import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.IConsumer;
 import edu.lognet.reputation.model.user.IProvider;
 import edu.lognet.reputation.model.user.IRater;
+import edu.lognet.reputation.model.user.ReputedProvider;
 import edu.lognet.reputation.model.user.User;
 
 /**
@@ -81,11 +82,18 @@ public class Simulation1 extends Simulation {
 				providers.remove(provider);
 			}
 		}
+		
+		if(providers.size() == 0){ // NO PROVIDER FOR THIS SERVICE
+			return null;
+		}
 
 		// THE CONSUMER CHOOSE A PROVIDER
 		Map<IRater, Credibility> raterListOfChosenProvider = new HashMap<IRater, Credibility>();
-		IProvider chosenProvider = consumer.chooseProvider(providers,
-				service, getDataLostPercent(), raterListOfChosenProvider, getChoosingStrategy());
+		Map<IProvider, Map<IRater, Credibility>> tempRaterSetTable = new HashMap<IProvider, Map<IRater, Credibility>>();
+		
+		List<ReputedProvider> reputedProvider = getReputedProviderList(consumer,providers, service, tempRaterSetTable);
+		IProvider chosenProvider = consumer.chooseProvider(reputedProvider,
+				service, getDataLostPercent(), raterListOfChosenProvider, getChoosingStrategy(), tempRaterSetTable);
 
 		if (chosenProvider != null) {
 			if (Simulation.LOG_ENABLED == 1) {
@@ -93,6 +101,7 @@ public class Simulation1 extends Simulation {
 						+ " choose provider "
 						+ ((User) chosenProvider).getName());
 			}
+			
 			// COMPUTE RATING DATA LOST
 			List<IRater> raters = service.getRaters(chosenProvider);
 			// exclude consumer from the list
@@ -106,6 +115,7 @@ public class Simulation1 extends Simulation {
 			if (db != 0) {
 				dataLost = 1 - raterListOfChosenProvider.size() / db;
 			}
+			
 			// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FB)
 			double perEval = Reputation.generatePerEval(chosenProvider,
 					observanceTolDefault);
@@ -142,7 +152,6 @@ public class Simulation1 extends Simulation {
 			if (!exist) {
 				service.addRater(chosenProvider, (IRater) consumer);
 			}
-//			System.out.print("\n interaction: " + interaction + "\n");
 		}
 		
 		if (Simulation.LOG_ENABLED == 1) {

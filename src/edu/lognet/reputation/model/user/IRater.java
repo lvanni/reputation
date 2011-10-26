@@ -12,12 +12,17 @@ import edu.lognet.reputation.model.service.Service;
  */
 public interface IRater {
 	
+	public static enum raterType {
+		HONEST,
+		DISHONEST,
+		RANDOM,
+		COLLUSIVE
+	}
+	
 	/**
 	 * Get the rating of the rater in a given service for a certain provider
 	 * @param service
 	 * @return
 	 */
-	//Thao added
 	public Experience getConsumerExp(IProvider provider, Service service);
-	//Thao end
 }

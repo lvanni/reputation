@@ -22,9 +22,9 @@ public interface IConsumer {
 	 * @param choosingStrategy 
 	 * @return 
 	 */
-	public IProvider chooseProvider(List<IProvider> providers, Service service,
-			int dataLostPercent,
-			Map<IRater, Credibility> raterList, int choosingStrategy);
+	public IProvider chooseProvider(List<ReputedProvider> reputedProviderList,
+			Service service, int dataLostPercent,
+			Map<IRater, Credibility> acceptedRaterSet, int choosingStrategy, Map<IProvider, Map<IRater, Credibility>> tempRaterSetTable);
 
 	/**
 	 * Get the last experience of the consumer related to a provider in a given service 

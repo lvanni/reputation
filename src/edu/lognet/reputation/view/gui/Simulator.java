@@ -26,8 +26,8 @@ public class Simulator {
 	/* Attributes */
 	/* --------------------------------------------------------- */
 	private static final int TIMER_INTERVAL = 100;
-	public static final int SIMULATION_SIZE = 800;
-	public static final int SIMULATION_PRECISION = 4;
+	public static final int SIMULATION_SIZE = 200;
+	public static final int SIMULATION_PRECISION = 8;
 
 	private final Shell shell;
 	private Display display;
@@ -38,8 +38,8 @@ public class Simulator {
 
 	private Canvas canvas;
 
-	private Runnable runnable;
-
+	private Runnable view;
+	private Thread controller;
 	private	Simulation2 simulation = null;
 
 	/* --------------------------------------------------------- */
@@ -273,10 +273,11 @@ public class Simulator {
 						strategy);
 
 				// Launch the simulation
-				new Thread(simulation).start();
+				controller = new Thread(simulation);
+				controller.start();
 
 				// Launch the timer
-				display.timerExec(TIMER_INTERVAL, runnable);
+				display.timerExec(TIMER_INTERVAL, view);
 			}
 		});
 		FormData okFormData = new FormData();
@@ -291,7 +292,10 @@ public class Simulator {
 		clearButton.setText("Stop");
 		clearButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				display.timerExec(-1, runnable);
+				display.timerExec(-1, view);
+				if(controller != null){
+					controller.stop();
+				}
 			}
 		});
 		FormData clearFormData = new FormData();
@@ -301,7 +305,7 @@ public class Simulator {
 		clearButton.setLayoutData(clearFormData);
 
 		// Set up the timer for the animation
-		runnable = new Runnable() {
+		view = new Runnable() {
 			public void run() {
 				animate();
 				display.timerExec(TIMER_INTERVAL, this);
@@ -328,7 +332,7 @@ public class Simulator {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		display.timerExec(-1, runnable);
+		display.timerExec(-1, view);
 		display.dispose();
 	}
 

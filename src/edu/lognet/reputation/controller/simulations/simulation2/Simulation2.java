@@ -32,91 +32,93 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		userFromPosition = new HashMap<String, UserGUIStatus>();
 		positionFromUser = new HashMap<String, UserGUIStatus>();
 	}
-	
+
 	/* --------------------------------------------------------- */
 	/* extends AbstractExperiment */
 	/* --------------------------------------------------------- */
 	private void movePeer(Interaction interaction){
-			UserGUIStatus provider = getPositionFromUser(((User)interaction.getProvider()).getId());
-			UserGUIStatus consumer = getPositionFromUser(((User)interaction.getConsumer()).getId());
-			int px = provider.getX();
-			int py = provider.getY();
-			int cx = consumer.getX();
-			int cy = consumer.getY();
-			
-			// MOVING X
-			if((interaction.getFeedback()>0.5 && cx<px) || (interaction.getFeedback()<=0.5 && cx>=px)){
-				cx = (cx + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
-				px -= Simulator.SIMULATION_PRECISION;
-				if(px < 0) {
-					px = Simulator.SIMULATION_SIZE + px;
-				}
-			} else {
-				px = (px + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
-				cx -= Simulator.SIMULATION_PRECISION;
-				if(cx < 0) {
-					cx = Simulator.SIMULATION_SIZE + cx;
-				}
+		UserGUIStatus provider = getPositionFromUser(((User)interaction.getProvider()).getId());
+		UserGUIStatus consumer = getPositionFromUser(((User)interaction.getConsumer()).getId());
+		int px = provider.getX();
+		int py = provider.getY();
+		int cx = consumer.getX();
+		int cy = consumer.getY();
+
+		// MOVING X
+		if((interaction.getFeedback()>0.5 && cx<px) || (interaction.getFeedback()<=0.5 && cx>=px)){
+			cx = (cx + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
+			px -= Simulator.SIMULATION_PRECISION;
+			if(px < 0) {
+				px = Simulator.SIMULATION_SIZE + px;
 			}
-			
-			// MOVING Y
-			if((interaction.getFeedback()>0.5 && cy<py) || (interaction.getFeedback()<=0.5 && cy>=py)){
-				cy = (cy + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
-				py -= Simulator.SIMULATION_PRECISION;
-				if(py < 0) {
-					py = Simulator.SIMULATION_SIZE + py;
-				}
-			} else {
-				py = (py + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
-				cy -= Simulator.SIMULATION_PRECISION;
-				if(cy < 0) {
-					cy = Simulator.SIMULATION_SIZE + cy;
-				}
+		} else {
+			px = (px + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
+			cx -= Simulator.SIMULATION_PRECISION;
+			if(cx < 0) {
+				cx = Simulator.SIMULATION_SIZE + cx;
 			}
-			
-			// EXCHANGE POSITION
-			UserGUIStatus user1 = getUserFromPosition(px, py);
-			user1.setX(provider.getX());
-			user1.setY(provider.getY());
-			provider.setX(px);
-			provider.setY(py);
-			putUserGUI(user1);
-			putUserGUI(provider);
-			
-			UserGUIStatus user2 = getUserFromPosition(cx, cy);
-			user2.setX(consumer.getX());
-			user2.setY(consumer.getY());
-			consumer.setX(cx);
-			consumer.setY(cy);
-			putUserGUI(user2);
-			putUserGUI(consumer);
+		}
+
+		// MOVING Y
+		if((interaction.getFeedback()>0.5 && cy<py) || (interaction.getFeedback()<=0.5 && cy>=py)){
+			cy = (cy + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
+			py -= Simulator.SIMULATION_PRECISION;
+			if(py < 0) {
+				py = Simulator.SIMULATION_SIZE + py;
+			}
+		} else {
+			py = (py + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
+			cy -= Simulator.SIMULATION_PRECISION;
+			if(cy < 0) {
+				cy = Simulator.SIMULATION_SIZE + cy;
+			}
+		}
+
+		// EXCHANGE POSITION
+		UserGUIStatus user1 = getUserFromPosition(px, py);
+		user1.setX(provider.getX());
+		user1.setY(provider.getY());
+		provider.setX(px);
+		provider.setY(py);
+		putUserGUI(user1);
+		putUserGUI(provider);
+
+		UserGUIStatus user2 = getUserFromPosition(cx, cy);
+		user2.setX(consumer.getX());
+		user2.setY(consumer.getY());
+		consumer.setX(cx);
+		consumer.setY(cy);
+		putUserGUI(user2);
+		putUserGUI(consumer);
 	}
-	
+
 	/**
 	 * @see Simulation#setup()
 	 */
 	protected void setup() throws IOException {
 		// CREATE THE SERVICES
 		services = getServiceSet();
-		
+
 		// CREATE THE USERS
 		users = getUserSet(services);
-		
+
 		// Draw all the user into a square
 		int i = 0; 
 		for(int x = 0 ; x < Simulator.SIMULATION_SIZE ; x = x+Simulator.SIMULATION_PRECISION) {
 			for(int y = 0 ; y < Simulator.SIMULATION_SIZE ; y = y+Simulator.SIMULATION_PRECISION) {
-				putUserGUI(new UserGUIStatus(users.get(i), x, y));
-				i++;
+				if(i < users.size()) {
+					putUserGUI(new UserGUIStatus(users.get(i), x, y));
+					i++;
+				}
 			}
 		}
 	}
-	
+
 	public void run() {
 		try {
 			// SETUP
 			setup();
-			
+
 			// COMPUTE
 			List<Interaction> interactions = new ArrayList<Interaction>();
 			for (int i = 0; i < getInteractionNumber(); i++) {
@@ -127,7 +129,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 				}
 				interactionCount++;
 			}
-			
+
 			// PRINT RESULT
 			extractData(interactions);
 		} catch (IOException e) {
@@ -138,11 +140,11 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	public synchronized Map<String, UserGUIStatus> getUserGUIList() {
 		return new HashMap<String, UserGUIStatus>(userFromPosition);
 	}
-	
+
 	public synchronized UserGUIStatus getPositionFromUser(String userID) {
 		return new UserGUIStatus(userFromPosition.get(userID));
 	}
-	
+
 	public synchronized UserGUIStatus getUserFromPosition(int x, int y) {
 		return new UserGUIStatus(positionFromUser.get("x" + x + "y" + y));
 	}
@@ -159,6 +161,6 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	public synchronized void setInteractionCount(int interactionCount) {
 		this.interactionCount = interactionCount;
 	}
-	
-	
+
+
 }

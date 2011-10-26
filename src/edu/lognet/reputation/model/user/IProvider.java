@@ -9,8 +9,17 @@ import edu.lognet.reputation.model.user.User.victimGroup;
  * @author lvanni
  *
  */
-//public interface IProvider extends Comparable<IProvider> {//Thao commented
 public interface IProvider {
+	
+	public static enum providerType {
+		GOOD,
+		GOODTURNSBAD,
+		BADTURNSGOOD,
+		FLUCTUATE,
+		BAD,
+		NORMAL
+	}
+
 	/**
 	 * @return the provided Service
 	 */
