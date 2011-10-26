@@ -19,8 +19,7 @@ import edu.lognet.reputation.view.gui.UserGUI;
 
 public class Simulation2 extends Simulation1 implements Runnable {
 
-	private Map<String, UserGUI> userFromPosition;
-	private Map<String, UserGUI> positionFromUser;
+	private Map<String, UserGUI> userGUI;
 	private int interactionCount = 0;
 
 	/* --------------------------------------------------------- */
@@ -30,8 +29,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,
 				badUser, dataLostPercent, choosingStrategy);
-		userFromPosition = new HashMap<String, UserGUI>();
-		positionFromUser = new HashMap<String, UserGUI>();
+		userGUI = new HashMap<String, UserGUI>();
 	}
 
 	/* --------------------------------------------------------- */
@@ -56,12 +54,24 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	 * @param interaction
 	 */
 	private void movePeer(Interaction interaction){
-		UserGUI provider = getPositionFromUser(((User)interaction.getProvider()).getId());
-		UserGUI consumer = getPositionFromUser(((User)interaction.getConsumer()).getId());
+		Map<String, UserGUI> userGUI = getUserGUIList();
+		UserGUI provider = userGUI.get(((User)interaction.getProvider()).getId());
+		UserGUI consumer = userGUI.get(((User)interaction.getConsumer()).getId());
 		int px = provider.getX();
 		int py = provider.getY();
 		int cx = consumer.getX();
 		int cy = consumer.getY();
+		
+//		System.out.println("Provider:");
+//		System.out.println("\t-QoS: " + interaction.getProvider().getQoS());
+//		System.out.println("\t-x: " + provider.getX());
+//		System.out.println("\t-y: " + provider.getY());
+//		System.out.println("\t-color: " + provider.getColor());
+//		System.out.println("Consumer:");
+//		System.out.println("\t-x: " + consumer.getX());
+//		System.out.println("\t-y: " + consumer.getY());
+//		System.out.println("\t-color: " + consumer.getColor());
+//		System.out.println("Interaction feedback = " + interaction.getFeedback());
 
 		// MOVING X
 		double distance = getDistance(provider, consumer);
@@ -97,21 +107,34 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		}
 
 		// EXCHANGE POSITION
-		UserGUI user1 = getUserFromPosition(px, py);
+		UserGUI user1 = userGUI.get("x" + px + "y" + py);
+//		System.out.println("provider move to");
+//		System.out.println("\t-x: " + user1.getX());
+//		System.out.println("\t-y: " + user1.getY());
+//		System.out.println("\t-color: " + user1.getColor());
+		
 		user1.setX(provider.getX());
 		user1.setY(provider.getY());
 		provider.setX(px);
 		provider.setY(py);
 		putUserGUI(user1);
 		putUserGUI(provider);
+		userGUI = getUserGUIList(); // update userGUI
 
-		UserGUI user2 = getUserFromPosition(cx, cy);
+		UserGUI user2 = userGUI.get("x" + cx + "y" + cy);
+//		System.out.println("consumer move to");
+//		System.out.println("\t-x: " + user2.getX());
+//		System.out.println("\t-y: " + user2.getY());
+//		System.out.println("\t-color: " + user2.getColor());
+		
 		user2.setX(consumer.getX());
 		user2.setY(consumer.getY());
 		consumer.setX(cx);
 		consumer.setY(cy);
 		putUserGUI(user2);
 		putUserGUI(consumer);
+		
+//		System.out.println("\n-----\n");
 	}
 
 	/* --------------------------------------------------------- */
@@ -149,13 +172,18 @@ public class Simulation2 extends Simulation1 implements Runnable {
 
 			// COMPUTE
 			List<Interaction> interactions = new ArrayList<Interaction>();
-			for (int i = 0; i < getInteractionNumber(); i++) {
+			int i = 0;
+			while (i < getInteractionNumber()) {
 				Interaction interaction = createInteraction(i);
 				if(interaction != null) {
 					interactions.add(interaction);
 					movePeer(interaction);
+					i++;
+					setInteractionCount(interactionCount+1);
 				}
-				interactionCount++;
+//				else {
+//					System.out.println("interaction null");
+//				}
 			}
 
 			// PRINT RESULT
@@ -169,20 +197,12 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	/* synchronized methods */
 	/* --------------------------------------------------------- */
 	public synchronized Map<String, UserGUI> getUserGUIList() {
-		return new HashMap<String, UserGUI>(userFromPosition);
-	}
-
-	public synchronized UserGUI getPositionFromUser(String userID) {
-		return new UserGUI(userFromPosition.get(userID));
-	}
-
-	public synchronized UserGUI getUserFromPosition(int x, int y) {
-		return new UserGUI(positionFromUser.get("x" + x + "y" + y));
+		return new HashMap<String, UserGUI>(userGUI);
 	}
 
 	public synchronized void putUserGUI(UserGUI userGUI) {
-		this.userFromPosition.put(userGUI.getUser().getId(), userGUI);
-		this.positionFromUser.put("x" + userGUI.getX() + "y" + userGUI.getY(), userGUI);
+		this.userGUI.put(userGUI.getUser().getId(), userGUI);
+		this.userGUI.put("x" + userGUI.getX() + "y" + userGUI.getY(), userGUI);
 	}
 
 	public synchronized int getInteractionCount() {
@@ -192,6 +212,4 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	public synchronized void setInteractionCount(int interactionCount) {
 		this.interactionCount = interactionCount;
 	}
-
-
 }

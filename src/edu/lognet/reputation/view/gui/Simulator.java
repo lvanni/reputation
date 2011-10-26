@@ -332,6 +332,9 @@ public class Simulator {
 				display.sleep();
 		}
 		display.timerExec(-1, view);
+		if(controller != null){
+			controller.stop();
+		}
 		display.dispose();
 	}
 
