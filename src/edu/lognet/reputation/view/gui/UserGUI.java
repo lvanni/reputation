@@ -1,11 +1,12 @@
-package edu.lognet.reputation.controller.simulations.simulation2;
+package edu.lognet.reputation.view.gui;
 
 import org.eclipse.swt.SWT;
 
 import edu.lognet.reputation.model.user.User;
 
 
-public class UserGUIStatus {
+
+public class UserGUI {
 	
 	private User user;
 	private int x;
@@ -14,14 +15,14 @@ public class UserGUIStatus {
 	
 	
 	// clone
-	public UserGUIStatus(UserGUIStatus userGUIStatus) {
+	public UserGUI(UserGUI userGUIStatus) {
 		this.user = userGUIStatus.user;
 		this.x = userGUIStatus.x;
 		this.y = userGUIStatus.y;
 		this.color = userGUIStatus.color;
 	}
 
-	public UserGUIStatus(User user, int x, int y) {
+	public UserGUI(User user, int x, int y) {
 		super();
 		this.user = user;
 		this.x = x;

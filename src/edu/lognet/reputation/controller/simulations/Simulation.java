@@ -123,7 +123,7 @@ public abstract class Simulation {
 	 * @return
 	 */
 	public List<ReputedProvider> getReputedProviderList(IConsumer consumer,
-			List<IProvider> providers, Service service, Map<IProvider, Map<IRater, Credibility>> tempRaterSetTable) {
+			List<IProvider> providers, Service service, Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap) {
 	
 		List<ReputedProvider> reputedProviderList = new ArrayList<ReputedProvider>();
 
@@ -137,11 +137,11 @@ public abstract class Simulation {
 				}
 			}
 
-			tempRaterSetTable.put(provider, new HashMap<IRater, Credibility>());
+			credibilityOfRaterMap.put(provider, new HashMap<IRater, Credibility>());
 			Reputation repCalculator = new Reputation();
 			
 			double reputation = repCalculator.getReputation(service, provider,
-					raters, consumer, tempRaterSetTable);
+					raters, consumer, credibilityOfRaterMap);
 
 			reputedProviderList.add(new ReputedProvider(provider, reputation));
 		}

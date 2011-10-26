@@ -11,6 +11,7 @@ import edu.lognet.reputation.controller.simulations.simulation1.Simulation1;
 import edu.lognet.reputation.model.Interaction;
 import edu.lognet.reputation.model.user.User;
 import edu.lognet.reputation.view.gui.Simulator;
+import edu.lognet.reputation.view.gui.UserGUI;
 
 /**
  * @author lvanni
@@ -18,8 +19,8 @@ import edu.lognet.reputation.view.gui.Simulator;
 
 public class Simulation2 extends Simulation1 implements Runnable {
 
-	private Map<String, UserGUIStatus> userFromPosition;
-	private Map<String, UserGUIStatus> positionFromUser;
+	private Map<String, UserGUI> userFromPosition;
+	private Map<String, UserGUI> positionFromUser;
 	private int interactionCount = 0;
 
 	/* --------------------------------------------------------- */
@@ -29,23 +30,43 @@ public class Simulation2 extends Simulation1 implements Runnable {
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,
 				badUser, dataLostPercent, choosingStrategy);
-		userFromPosition = new HashMap<String, UserGUIStatus>();
-		positionFromUser = new HashMap<String, UserGUIStatus>();
+		userFromPosition = new HashMap<String, UserGUI>();
+		positionFromUser = new HashMap<String, UserGUI>();
 	}
 
 	/* --------------------------------------------------------- */
-	/* extends AbstractExperiment */
+	/* private methods */
 	/* --------------------------------------------------------- */
+	/**
+	 * 
+	 * @param user1
+	 * @param user2
+	 * @return
+	 */
+	private double getDistance(UserGUI user1, UserGUI user2) {
+		int xa = user1.getX();
+		int xb = user2.getX();
+		int ya = user1.getY();
+		int yb = user2.getY();
+		return Math.sqrt(Math.pow(xb-xa, 2) + Math.pow(yb-ya, 2));
+	}
+	
+	/**
+	 * 
+	 * @param interaction
+	 */
 	private void movePeer(Interaction interaction){
-		UserGUIStatus provider = getPositionFromUser(((User)interaction.getProvider()).getId());
-		UserGUIStatus consumer = getPositionFromUser(((User)interaction.getConsumer()).getId());
+		UserGUI provider = getPositionFromUser(((User)interaction.getProvider()).getId());
+		UserGUI consumer = getPositionFromUser(((User)interaction.getConsumer()).getId());
 		int px = provider.getX();
 		int py = provider.getY();
 		int cx = consumer.getX();
 		int cy = consumer.getY();
 
 		// MOVING X
-		if((interaction.getFeedback()>0.5 && cx<px) || (interaction.getFeedback()<=0.5 && cx>=px)){
+		double distance = getDistance(provider, consumer);
+		if((interaction.getFeedback()>0.5 && cx<px && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)) || 
+				(interaction.getFeedback()<=0.5 && cx>=px && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION))){
 			cx = (cx + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
 			px -= Simulator.SIMULATION_PRECISION;
 			if(px < 0) {
@@ -60,7 +81,8 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		}
 
 		// MOVING Y
-		if((interaction.getFeedback()>0.5 && cy<py) || (interaction.getFeedback()<=0.5 && cy>=py)){
+		if((interaction.getFeedback()>0.5 && cy<py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)) || 
+				(interaction.getFeedback()<=0.5 && cy>=py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION))){
 			cy = (cy + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
 			py -= Simulator.SIMULATION_PRECISION;
 			if(py < 0) {
@@ -75,7 +97,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		}
 
 		// EXCHANGE POSITION
-		UserGUIStatus user1 = getUserFromPosition(px, py);
+		UserGUI user1 = getUserFromPosition(px, py);
 		user1.setX(provider.getX());
 		user1.setY(provider.getY());
 		provider.setX(px);
@@ -83,7 +105,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		putUserGUI(user1);
 		putUserGUI(provider);
 
-		UserGUIStatus user2 = getUserFromPosition(cx, cy);
+		UserGUI user2 = getUserFromPosition(cx, cy);
 		user2.setX(consumer.getX());
 		user2.setY(consumer.getY());
 		consumer.setX(cx);
@@ -92,6 +114,9 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		putUserGUI(consumer);
 	}
 
+	/* --------------------------------------------------------- */
+	/* protected methods */
+	/* --------------------------------------------------------- */
 	/**
 	 * @see Simulation#setup()
 	 */
@@ -107,13 +132,16 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		for(int x = 0 ; x < Simulator.SIMULATION_SIZE ; x = x+Simulator.SIMULATION_PRECISION) {
 			for(int y = 0 ; y < Simulator.SIMULATION_SIZE ; y = y+Simulator.SIMULATION_PRECISION) {
 				if(i < users.size()) {
-					putUserGUI(new UserGUIStatus(users.get(i), x, y));
+					putUserGUI(new UserGUI(users.get(i), x, y));
 					i++;
 				}
 			}
 		}
 	}
 
+	/* --------------------------------------------------------- */
+	/* public methods */
+	/* --------------------------------------------------------- */
 	public void run() {
 		try {
 			// SETUP
@@ -137,19 +165,22 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		}
 	}
 
-	public synchronized Map<String, UserGUIStatus> getUserGUIList() {
-		return new HashMap<String, UserGUIStatus>(userFromPosition);
+	/* --------------------------------------------------------- */
+	/* synchronized methods */
+	/* --------------------------------------------------------- */
+	public synchronized Map<String, UserGUI> getUserGUIList() {
+		return new HashMap<String, UserGUI>(userFromPosition);
 	}
 
-	public synchronized UserGUIStatus getPositionFromUser(String userID) {
-		return new UserGUIStatus(userFromPosition.get(userID));
+	public synchronized UserGUI getPositionFromUser(String userID) {
+		return new UserGUI(userFromPosition.get(userID));
 	}
 
-	public synchronized UserGUIStatus getUserFromPosition(int x, int y) {
-		return new UserGUIStatus(positionFromUser.get("x" + x + "y" + y));
+	public synchronized UserGUI getUserFromPosition(int x, int y) {
+		return new UserGUI(positionFromUser.get("x" + x + "y" + y));
 	}
 
-	public synchronized void putUserGUI(UserGUIStatus userGUI) {
+	public synchronized void putUserGUI(UserGUI userGUI) {
 		this.userFromPosition.put(userGUI.getUser().getId(), userGUI);
 		this.positionFromUser.put("x" + userGUI.getX() + "y" + userGUI.getY(), userGUI);
 	}

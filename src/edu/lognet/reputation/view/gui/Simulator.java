@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import edu.lognet.reputation.controller.simulations.simulation2.Simulation2;
-import edu.lognet.reputation.controller.simulations.simulation2.UserGUIStatus;
 
 public class Simulator {
 
@@ -213,9 +212,9 @@ public class Simulator {
 			public void paintControl(PaintEvent event) {
 				if(simulation != null) {
 					counter.setText(simulation.getInteractionCount() + "");
-					Map <String, UserGUIStatus> userGUIStatus = simulation.getUserGUIList();
+					Map <String, UserGUI> userGUIStatus = simulation.getUserGUIList();
 					for (String userId : userGUIStatus.keySet()) {
-						UserGUIStatus userGUI = userGUIStatus.get(userId);
+						UserGUI userGUI = userGUIStatus.get(userId);
 						event.gc.setBackground(event.display.getSystemColor(userGUI.getColor()));
 //						event.gc.drawPoint(userGUI.getX(), userGUI.getY());
 						event.gc.fillRectangle(userGUI.getX(), userGUI.getY(), SIMULATION_PRECISION, SIMULATION_PRECISION);

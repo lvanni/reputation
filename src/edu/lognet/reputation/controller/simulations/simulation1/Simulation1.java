@@ -88,12 +88,13 @@ public class Simulation1 extends Simulation {
 		}
 
 		// THE CONSUMER CHOOSE A PROVIDER
-		Map<IRater, Credibility> raterListOfChosenProvider = new HashMap<IRater, Credibility>();
-		Map<IProvider, Map<IRater, Credibility>> tempRaterSetTable = new HashMap<IProvider, Map<IRater, Credibility>>();
+		Map<IRater, Credibility> credibilityOfRater = new HashMap<IRater, Credibility>();
+		Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap = new HashMap<IProvider, Map<IRater, Credibility>>();
 		
-		List<ReputedProvider> reputedProvider = getReputedProviderList(consumer,providers, service, tempRaterSetTable);
-		IProvider chosenProvider = consumer.chooseProvider(reputedProvider,
-				service, getDataLostPercent(), raterListOfChosenProvider, getChoosingStrategy(), tempRaterSetTable);
+		List<ReputedProvider> reputedProvider = getReputedProviderList(consumer,providers, service, credibilityOfRaterMap);
+		IProvider chosenProvider = consumer.chooseProvider(reputedProvider, service, getDataLostPercent(), getChoosingStrategy());
+		
+		credibilityOfRater.putAll(credibilityOfRaterMap.get(chosenProvider));
 
 		if (chosenProvider != null) {
 			if (Simulation.LOG_ENABLED == 1) {
@@ -113,7 +114,7 @@ public class Simulation1 extends Simulation {
 			double db = raters.size();
 			double dataLost = 0;
 			if (db != 0) {
-				dataLost = 1 - raterListOfChosenProvider.size() / db;
+				dataLost = 1 - credibilityOfRater.size() / db;
 			}
 			
 			// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FB)
@@ -133,7 +134,7 @@ public class Simulation1 extends Simulation {
 			// but haven't been set
 			// So set adjusted Cred and update useful factors here
 			Reputation.updateUsefulFactor(consumer, service,
-					chosenProvider, raterListOfChosenProvider);
+					chosenProvider, credibilityOfRater);
 
 			// UPDATE THE INTERACTION
 			interaction = new Interaction(chosenProvider,

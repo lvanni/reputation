@@ -21,89 +21,25 @@ import edu.lognet.reputation.model.user.User;
  */
 public class Reputation {
 
-	/**
-	 * Return the reputation of a 
-	 * @param raters
-	 * @param consumerOldExperience
-	 * @param cor
-	 * @return
-	 */
-	
-	//Thao added
+	/* --------------------------------------------------------- */
+	/* Attributes */
+	/* --------------------------------------------------------- */
 	private static double preRepScoreDefault=0.5;
 	private static double usefulnessDefault = 0.5, credDefault = 0.5;
-	private int pessiFactorDefault = 2;// Minimum of pessiFactor should be 2, high
-	// value --> credibility decrease more when false feedback
+	private int pessiFactorDefault = 2;
 	private Map<IRater, Double> temporalFactor = new HashMap<IRater, Double>();
 	private static double usefulTolerance = 0.2;
 	
-	
-	//Thao end
-	/*
-	public double getReputation(Service service, IProvider provider, List<IRater> raters, Experience consumerOldExperience, Map<IRater, Credibility> cor, Map<IProvider, Map<IRater, Credibility>> raterSetTable) {
-	*/
-	public double getReputation(Service service, IProvider provider, List<IRater> raters, IConsumer consumer, Map<IProvider, Map<IRater, Credibility>> raterSetTable) {
-		//Thao added IConsumer		 
-		//My info on this service, for this provider is in Experience
-		//cor always != null but can be an empty table, should not be touched
-		//consumerOldExp can = null
-		//Raters already exclude me, is the short list and is included in raterSetTable
-		//raterSetTable != null, the Map corresponding to the provider != null, but Creds for raters hasn't been initiated
-		
-		Experience consumerOldExperience = consumer.getConsumerExp(provider, service);
-		Map<IRater, Credibility> cor = consumer.getCredibilityOfRater(service);
-		if (raters.size()==0) {
-			if (consumerOldExperience ==null){
-				return preRepScoreDefault;
-			} else
-				return consumerOldExperience.getPerEval();			
-		} else {
-			double preRepScore;
-			if (consumerOldExperience==null){
-				//set preRepScore to default, and no perEval
-				preRepScore = preRepScoreDefault;
-			} else {
-				//use preRepScore as normal
-				preRepScore = consumerOldExperience.getPreRepScore();
-			}
-			//GET RATINGS
-			//raters != null, cor always != null but can be an empty table if consumer never use ratings before
-			//raterSetTable is used to store adjusted creds corresponding to each provider
-			this.adjustCredibility(service, provider, raters, cor, preRepScore, raterSetTable);
-			//raters not include me
-			this.computeTimeEffect(service, provider, raters, consumer);
-			//Start computing RepScore			
-			double roundedAssess = 0;
-			double eval, d, cred;
-			double numerator = 0, denominator = 0;
-			for (IRater rater : raters) {
-				cred = raterSetTable.get(provider).get(rater).getCredibility();
-				numerator = numerator + rater.getConsumerExp(provider, service).getFeedback()
-							* cred * temporalFactor.get(rater);
-				//RateWeb way on denominator
-				//denominator = denominator + cred;
-				//My way on denominator
-				denominator = denominator + cred*temporalFactor.get(rater);				
-			}
-			if (consumerOldExperience != null) {
-				eval = consumerOldExperience.getPerEval();
-				//RateWeb way on denominator
-				//denominator++;
-				//My way on denominator
-				denominator = denominator + temporalFactor.get(consumer);
-				d = (numerator + eval * temporalFactor.get(consumer))
-						/ (denominator);// weight on personal evaluation equals 1; Consumer is marked as null
-				roundedAssess = Math.round(d * 100) / (double) 100;// to take 2 decimal
-															// digits only			
-			} else {
-				d = numerator / denominator;
-				roundedAssess = Math.round(d * 100) / (double) 100;// to take 2 decimal
-															// digits only
-				}
-			return roundedAssess;		
-			}	
-		}
-	
+	/* --------------------------------------------------------- */
+	/* private Methods */
+	/* --------------------------------------------------------- */
+	/**
+	 * 
+	 * @param service
+	 * @param provider
+	 * @param raters
+	 * @param consumer
+	 */
 	private void computeTimeEffect(Service service, IProvider provider,
 			List<IRater> raters, IConsumer consumer) {
 		double temp;		
@@ -116,10 +52,8 @@ public class Reputation {
 			}	
 			raterArray[i] = (IRater) consumer;
 			IRater[] sortedArray = mergeSort(raterArray, service, provider, consumer);
-//			System.out.print("\nLength="+sortedArray.length);
 			for (int j = 0; j < sortedArray.length; j++) {
 				temp = 1 / ((double) j + 1);
-//				System.out.print("\nElement="+sortedArray[j] + "\ntemp="+temp + "\n");
 				temporalFactor.put(sortedArray[j], temp);
 			}
 		} else {
@@ -129,15 +63,21 @@ public class Reputation {
 				i++;
 			}			
 			IRater[] sortedArray = mergeSort(raterArray, service, provider, consumer);
-//			System.out.print("\nLength="+sortedArray.length);
 			for (int j = 0; j < sortedArray.length; j++) {
 				temp = 1 / ((double) j + 1);
-//				System.out.print("\nElement="+sortedArray[j] + "\ntemp="+temp + "\n");
 				temporalFactor.put(sortedArray[j], temp);
 			}
 		}		
 	}
 
+	/**
+	 * 
+	 * @param raterArray
+	 * @param service
+	 * @param provider
+	 * @param consumer
+	 * @return
+	 */
 	private IRater[] mergeSort(IRater[] raterArray, Service service,
 			IProvider provider, IConsumer consumer) {
 		Experience consumerOldExperience = consumer.getConsumerExp(provider, service);
@@ -196,7 +136,81 @@ public class Reputation {
 		}
 		return raterArray;
 	}
-
+	
+	/* --------------------------------------------------------- */
+	/* public Methods */
+	/* --------------------------------------------------------- */
+	/**
+	 * 
+	 * @param service
+	 * @param provider
+	 * @param raters
+	 * @param consumer
+	 * @param credibilityOfRaterMap
+	 * @return
+	 */
+	public double getReputation(Service service, IProvider provider, List<IRater> raters, IConsumer consumer, Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap) {
+		//Thao added IConsumer		 
+		//My info on this service, for this provider is in Experience
+		//cor always != null but can be an empty table, should not be touched
+		//consumerOldExp can = null
+		//Raters already exclude me, is the short list and is included in raterSetTable
+		//raterSetTable != null, the Map corresponding to the provider != null, but Creds for raters hasn't been initiated
+		
+		Experience consumerOldExperience = consumer.getConsumerExp(provider, service);
+		Map<IRater, Credibility> credibilityOfRater = consumer.getCredibilityOfRater(service);
+		if (raters.size()==0) {
+			if (consumerOldExperience ==null){
+				return preRepScoreDefault;
+			} else
+				return consumerOldExperience.getPerEval();			
+		} else {
+			double preRepScore;
+			if (consumerOldExperience==null){
+				//set preRepScore to default, and no perEval
+				preRepScore = preRepScoreDefault;
+			} else {
+				//use preRepScore as normal
+				preRepScore = consumerOldExperience.getPreRepScore();
+			}
+			//GET RATINGS
+			//raters != null, cor always != null but can be an empty table if consumer never use ratings before
+			//raterSetTable is used to store adjusted creds corresponding to each provider
+			this.adjustCredibility(service, provider, raters, credibilityOfRater, preRepScore, credibilityOfRaterMap);
+			//raters not include me
+			this.computeTimeEffect(service, provider, raters, consumer);
+			//Start computing RepScore			
+			double roundedAssess = 0;
+			double eval, d, cred;
+			double numerator = 0, denominator = 0;
+			for (IRater rater : raters) {
+				cred = credibilityOfRaterMap.get(provider).get(rater).getCredibility();
+				numerator = numerator + rater.getConsumerExp(provider, service).getFeedback()
+							* cred * temporalFactor.get(rater);
+				//RateWeb way on denominator
+				//denominator = denominator + cred;
+				//My way on denominator
+				denominator = denominator + cred*temporalFactor.get(rater);				
+			}
+			if (consumerOldExperience != null) {
+				eval = consumerOldExperience.getPerEval();
+				//RateWeb way on denominator
+				//denominator++;
+				//My way on denominator
+				denominator = denominator + temporalFactor.get(consumer);
+				d = (numerator + eval * temporalFactor.get(consumer))
+						/ (denominator);// weight on personal evaluation equals 1; Consumer is marked as null
+				roundedAssess = Math.round(d * 100) / (double) 100;// to take 2 decimal
+															// digits only			
+			} else {
+				d = numerator / denominator;
+				roundedAssess = Math.round(d * 100) / (double) 100;// to take 2 decimal
+															// digits only
+				}
+			return roundedAssess;		
+			}	
+		}
+	
 	/**
 	 * Return the reputation of a 
 	 * @param raters
@@ -218,7 +232,7 @@ public class Reputation {
 	 * @param experience
 	 * @return
 	 */
-	public void adjustCredibility(Service service, IProvider provider, List<IRater> raters, Map<IRater, Credibility> cor, double preRepScore, Map<IProvider, Map<IRater, Credibility>> raterSetTable) {
+	public void adjustCredibility(Service service, IProvider provider, List<IRater> raters, Map<IRater, Credibility> credibilityOfRater, double preRepScore, Map<IProvider, Map<IRater, Credibility>> raterSetTable) {
 		//raters != null
 		//credibilityOfRaterList(cor) always != null but can be an empty table, should not be touched
 		//consumerOldExp can = null
@@ -239,10 +253,10 @@ public class Reputation {
 		}
 		//cor.get(rater) can = null
 		for (IRater rater : raters) {// adjust raters' credibility
-			if (cor.get(rater)==null){
+			if (credibilityOfRater.get(rater)==null){
 				raterCred = credDefault;
 			} else {
-				raterCred = cor.get(rater).getCredibility();
+				raterCred = credibilityOfRater.get(rater).getCredibility();
 			}
 			rating = rater.getConsumerExp(provider, service).getFeedback();
 			euclideanDis = Math.abs(clusteredData.getMajorMean()
@@ -294,37 +308,37 @@ public class Reputation {
 					newRaterCred = Math.max((double) 0, temp);
 				}
 			}
-			if (cor.get(rater)==null) {
+			if (credibilityOfRater.get(rater)==null) {
 				newRaterCred = newRaterCred * usefulnessDefault;
 			} else {
-				newRaterCred = newRaterCred * cor.get(rater).getUsefulnessFactor();
+				newRaterCred = newRaterCred * credibilityOfRater.get(rater).getUsefulnessFactor();
 			}
-			newRaterCred = Math.round(newRaterCred * 100) / (double) 100;// to
-																			// get
-																			// only
-																			// 2
-																			// decimal
-																			// digits
-			//raterSetTable has been initiated for this provider
+			newRaterCred = Math.round(newRaterCred * 100) / (double) 100;
 			raterSetTable.get(provider).put(rater, new Credibility(newRaterCred));
 			}
 		}
 
-	//Thao added
-	public static void updateUsefulFactor(IConsumer consumer, Service service, IProvider provider, Map<IRater, Credibility> raterListOfChosenProvider) {
+	/**
+	 * 
+	 * @param consumer
+	 * @param service
+	 * @param provider
+	 * @param credibilityOfRater
+	 */
+	public static void updateUsefulFactor(IConsumer consumer, Service service, IProvider provider, Map<IRater, Credibility> credibilityOfRater) {
 		// to update useful factors and number submission only
-		Map<IRater, Credibility> cor = consumer.getCredibilityOfRater(service);//old creds
+		Map<IRater, Credibility> credibilityOfRaterToUpdate = consumer.getCredibilityOfRater(service);//old creds
 		//this rater set can be bigger or smaller than raterList
 		//cor always != null but can be an empty table, consumerOldExp can = null		
 		double correct = consumer.getConsumerExp(provider, service).getPerEval();
 		double dif, useful, newuseful, credValue;
 		int number; 
-		for (IRater rater : raterListOfChosenProvider.keySet()) {//rater always different from me customer
+		for (IRater rater : credibilityOfRater.keySet()) {//rater always different from me customer
 			dif = Math.abs(correct
 					- rater.getConsumerExp(provider, service).getFeedback());
-			if (cor.get(rater)!=null) {
-				useful = cor.get(rater).getUsefulnessFactor();
-				number = cor.get(rater).getNumberSubmission();					
+			if (credibilityOfRaterToUpdate.get(rater)!=null) {
+				useful = credibilityOfRaterToUpdate.get(rater).getUsefulnessFactor();
+				number = credibilityOfRaterToUpdate.get(rater).getNumberSubmission();					
 			} else {
 				useful = usefulnessDefault;
 				number = 0;
@@ -348,18 +362,25 @@ public class Reputation {
 																		// digits
 			}
 			number++;
-			credValue = raterListOfChosenProvider.get(rater).getCredibility();
-			if (cor.get(rater)!=null) {//exist old cred
-				cor.get(rater).setCredibility(credValue);
-				cor.get(rater).setUsefulnessFactor(newuseful);
-				cor.get(rater).setNumberSubmissions(number);
+			credValue = credibilityOfRater.get(rater).getCredibility();
+			if (credibilityOfRaterToUpdate.get(rater)!=null) {//exist old cred
+				credibilityOfRaterToUpdate.get(rater).setCredibility(credValue);
+				credibilityOfRaterToUpdate.get(rater).setUsefulnessFactor(newuseful);
+				credibilityOfRaterToUpdate.get(rater).setNumberSubmissions(number);
 			} else {
 				Credibility credObject = new Credibility(credValue, newuseful, number, consumer, rater, service); 
-				cor.put(rater, credObject);
+				credibilityOfRaterToUpdate.put(rater, credObject);
 			}
 		}
 	}
 	
+	/**
+	 * 
+	 * @param consumer
+	 * @param provider
+	 * @param perEval
+	 * @return
+	 */
 	public static double generateFeedback(IConsumer consumer, IProvider provider,
 			double perEval) {
 		if (consumer.getMyRaterType() == User.raterType.HONEST) {
@@ -434,6 +455,12 @@ public class Reputation {
 		}
 	}
 
+	/**
+	 * 
+	 * @param provider
+	 * @param observanceTolDefault2
+	 * @return
+	 */
 	public static double generatePerEval(IProvider provider,
 			double observanceTolDefault2) {
 		Random randomGenerator = new Random();

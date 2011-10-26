@@ -1,13 +1,11 @@
 package edu.lognet.reputation.model.user;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.lognet.reputation.controller.core.Gaussian;
-import edu.lognet.reputation.controller.core.Reputation;
 import edu.lognet.reputation.controller.simulations.Simulation;
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
@@ -123,12 +121,11 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	 * @param providers
 	 * @param service
 	 * @param dataLostPercent
-	 * @param acceptedRaterSet
+	 * @param credibilityOfRater
 	 * @param choosingStrategy
 	 */
 	public IProvider chooseProvider(List<ReputedProvider> reputedProviderList,
-			Service service, int dataLostPercent,
-			Map<IRater, Credibility> acceptedRaterSet, int choosingStrategy, Map<IProvider, Map<IRater, Credibility>> tempRaterSetTable) {
+			Service service, int dataLostPercent, int choosingStrategy) {
 
 		if (Simulation.LOG_ENABLED == 1) {
 			System.out.println("INFO: " + getName() + ".chooseProvider("
@@ -298,7 +295,6 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 
 		chosenProvider.setReputedScore(db);// bring out the functions of
 											// ReputedProvider to IProvider
-		acceptedRaterSet.putAll(tempRaterSetTable.get(chosenProvider));
 		return chosenProvider;
 	}
 
