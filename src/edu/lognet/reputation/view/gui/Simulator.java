@@ -25,7 +25,7 @@ public class Simulator {
 	/* Attributes */
 	/* --------------------------------------------------------- */
 	private static final int TIMER_INTERVAL = 100;
-	public static final int SIMULATION_SIZE = 200;
+	public static final int SIMULATION_SIZE = 400;
 	public static final int SIMULATION_PRECISION = 8;
 
 	private final Shell shell;

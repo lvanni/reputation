@@ -126,13 +126,16 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	 */
 	public IProvider chooseProvider(List<ReputedProvider> reputedProviderList,
 			Service service, int dataLostPercent, int choosingStrategy) {
-
+		
 		if (Simulation.LOG_ENABLED == 1) {
 			System.out.println("INFO: " + getName() + ".chooseProvider("
 					+ service.getName() + ")");
 			System.out.println("INFO: Provider list:");
 			System.out
 					.println("\tId\t\tName\t\tAge\t\tService\t\tQoS\t\tReputation\tStatistic");
+			for (ReputedProvider reputedProvider : reputedProviderList) {
+				System.out.println(reputedProvider);
+			}
 		}
 
 		IProvider chosenProvider = null;
@@ -210,14 +213,6 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				size /= 2;
 			}
 
-			if (Simulation.LOG_ENABLED == 1) {
-				System.out.println("INFO: "
-						+ getName()
-						+ " has choosen "
-						+ ((User) croppedProvList.get(i).getProvider())
-								.getName());
-			}
-
 			db = croppedProvList.get(i).getReputation();
 			chosenProvider = croppedProvList.get(i).getProvider();
 			break;
@@ -274,14 +269,6 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 				size /= 2;
 			}
 
-			if (Simulation.LOG_ENABLED == 1) {
-				System.out.println("INFO: "
-						+ getName()
-						+ " has choosen "
-						+ ((User) reputedProviderList.get(i).getProvider())
-								.getName());
-			}
-
 			db = reputedProviderList.get(i).getReputation();
 			chosenProvider = reputedProviderList.get(i).getProvider();
 			break;
@@ -295,6 +282,14 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 
 		chosenProvider.setReputedScore(db);// bring out the functions of
 											// ReputedProvider to IProvider
+		
+		if (Simulation.LOG_ENABLED == 1) {
+			System.out.println("INFO: "
+					+ getName()
+					+ " has choosen "
+					+  ((User) chosenProvider).getName());
+		}
+		
 		return chosenProvider;
 	}
 
