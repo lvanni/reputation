@@ -1,4 +1,4 @@
-package edu.lognet.reputation.controller.core;
+package edu.lognet.reputation.controller.core.dev;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import edu.lognet.reputation.controller.core.IReputationSystem;
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
 import edu.lognet.reputation.model.service.Service;
@@ -19,7 +20,7 @@ import edu.lognet.reputation.model.user.User;
  * @author lvanni
  *
  */
-public class Reputation {
+public class ReputationSystem implements IReputationSystem {
 
 	/* --------------------------------------------------------- */
 	/* Attributes */
@@ -325,7 +326,7 @@ public class Reputation {
 	 * @param provider
 	 * @param credibilityOfRater
 	 */
-	public static void updateUsefulFactor(IConsumer consumer, Service service, IProvider provider, Map<IRater, Credibility> credibilityOfRater) {
+	public void updateUsefulFactor(IConsumer consumer, Service service, IProvider provider, Map<IRater, Credibility> credibilityOfRater) {
 		// to update useful factors and number submission only
 		Map<IRater, Credibility> credibilityOfRaterToUpdate = consumer.getCredibilityOfRater(service);//old creds
 		//this rater set can be bigger or smaller than raterList
@@ -382,7 +383,7 @@ public class Reputation {
 	 * @param perEval
 	 * @return
 	 */
-	public static double generateFeedback(IConsumer consumer, IProvider provider,
+	public double generateFeedback(IConsumer consumer, IProvider provider,
 			double perEval) {
 		if (consumer.getRaterType() == User.raterType.HONEST) {
 			return perEval;
@@ -469,7 +470,7 @@ public class Reputation {
 	 * @param observanceTolDefault2
 	 * @return
 	 */
-	public static double generatePerEval(IProvider provider,
+	public double generatePerEval(IProvider provider,
 			double observanceTolDefault2) {
 		Random randomGenerator = new Random();
 		double value;

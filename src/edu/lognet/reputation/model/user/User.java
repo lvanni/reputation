@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.lognet.reputation.controller.core.utils.Gaussian;
 import edu.lognet.reputation.controller.simulations.Simulation;
+import edu.lognet.reputation.controller.utils.Gaussian;
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
 import edu.lognet.reputation.model.service.Service;

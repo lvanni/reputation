@@ -48,10 +48,22 @@ public interface IConsumer {
 	 */
 	public Map<IRater, Credibility> getCredibilityOfRater(Service service);
 
+	/**
+	 * 
+	 * @return
+	 */
 	public User.raterType getRaterType();
 
+	/**
+	 * 
+	 * @return
+	 */
 	public double getRatingTol();
 
+	/**
+	 * 
+	 * @return
+	 */
 	public collusionGroup getCollusionCode();
 
 }

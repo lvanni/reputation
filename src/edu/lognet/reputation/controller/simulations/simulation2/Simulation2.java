@@ -19,6 +19,9 @@ import edu.lognet.reputation.view.gui.UserGUI;
 
 public class Simulation2 extends Simulation1 implements Runnable {
 
+	/* --------------------------------------------------------- */
+	/* Attributes */
+	/* --------------------------------------------------------- */
 	private Map<String, UserGUI> userGUI;
 	private int interactionCount = 0;
 
@@ -32,8 +35,6 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,0,0,0,
 				badUser, 0, 100, 0, 0, 0, 100, dataLostPercent, choosingStrategy);
 		userGUI = new HashMap<String, UserGUI>();
-		//For testing simulation2
-		//		Simulation.LOG_ENABLED = 1;
 	}
 
 	/* --------------------------------------------------------- */

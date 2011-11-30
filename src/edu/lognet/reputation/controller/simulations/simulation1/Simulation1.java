@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import edu.lognet.reputation.controller.core.Reputation;
+import edu.lognet.reputation.controller.core.dev.ReputationSystem;
 import edu.lognet.reputation.controller.simulations.Simulation;
 import edu.lognet.reputation.model.Interaction;
 import edu.lognet.reputation.model.experience.Credibility;
@@ -29,6 +29,9 @@ import edu.lognet.reputation.model.user.User;
 
 public class Simulation1 extends Simulation {
 
+	/* --------------------------------------------------------- */
+	/* Attributes */
+	/* --------------------------------------------------------- */
 	private static double observanceTolDefault = 0.01;
 
 	/* --------------------------------------------------------- */
@@ -100,30 +103,6 @@ public class Simulation1 extends Simulation {
 			return null;
 		}
 		
-		// Restrict providerList's size to a limit of 5000
-		int maxProviderList = 5000;
-		if (providers.size() > maxProviderList) {
-			int firstIndex = randomGenerator.nextInt(providers.size());
-			if ((firstIndex + maxProviderList) <= (providers.size() - 1)) {
-				for (int j = 0; j < providers.size() - 1 - firstIndex
-						- maxProviderList; j++) {
-					providers.remove(firstIndex + maxProviderList + 1);// remove
-																		// all
-																		// elements
-																		// after
-																		// (firstIndex+maxProviderList)
-				}
-				for (int j = 0; j < firstIndex; j++) {
-					providers.remove(0);// remove all elements before firstIndex
-				}
-			} else {
-				for (int j = 0; j < (providers.size() - maxProviderList); j++) {
-					providers.remove(firstIndex + maxProviderList
-							- providers.size());
-				}
-			}
-		}
-
 		// THE CONSUMER CHOOSE A PROVIDER
 		Map<IRater, Credibility> credibilityOfRatersForChosenProvider = new HashMap<IRater, Credibility>();
 		Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap = new HashMap<IProvider, Map<IRater, Credibility>>();
@@ -157,10 +136,10 @@ public class Simulation1 extends Simulation {
 				dataLost = 1 - credibilityOfRatersForChosenProvider.size() / db;
 			}
 
-			// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FB)
-			double perEval = Reputation.generatePerEval(chosenProvider,
+			// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FeedBack)
+			double perEval = reputationSystem.generatePerEval(chosenProvider,
 					observanceTolDefault);
-			double feedback = Reputation.generateFeedback(consumer,
+			double feedback = reputationSystem.generateFeedback(consumer,
 					chosenProvider, perEval);
 			Experience oldExp = consumer
 					.getConsumerExp(chosenProvider, service);
@@ -173,13 +152,11 @@ public class Simulation1 extends Simulation {
 						chosenProvider.getReputedScore(),
 						oldExp.getNumUses() + 1);
 			}
-			Experience currentExp = Reputation.adjustExperience(oldExp, newExp);
+			Experience currentExp = ReputationSystem.adjustExperience(oldExp, newExp);
 			consumer.setConsumerExp(chosenProvider, service, currentExp);
 
-			// ADJUST CREDIBILITY is included in IConsumer.chooseProvider()
-			// but haven't been set
-			// So set adjusted Cred and update useful factors here
-			Reputation.updateUsefulFactor(consumer, service, chosenProvider,
+			// ADJUST CREDIBILITY
+			reputationSystem.updateUsefulFactor(consumer, service, chosenProvider,
 					credibilityOfRatersForChosenProvider);
 
 			// UPDATE THE INTERACTION

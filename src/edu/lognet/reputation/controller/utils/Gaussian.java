@@ -1,4 +1,4 @@
-package edu.lognet.reputation.controller.core.utils;
+package edu.lognet.reputation.controller.utils;
 
 import java.util.HashMap;
 import java.util.Map;

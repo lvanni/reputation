@@ -1,10 +1,15 @@
 package edu.lognet.reputation.model.user;
+
 /**
  * Represent a reputed provider
  * 
  * @author lvanni
  */
 public class ReputedProvider implements Comparable<ReputedProvider> {
+	
+	/* --------------------------------------------------------- */
+	/* Attributes */
+	/* --------------------------------------------------------- */
 	private IProvider provider;
 	private double reputation;
 	/** statistic factor used when a provider is chosen */
@@ -12,11 +17,17 @@ public class ReputedProvider implements Comparable<ReputedProvider> {
 	/** To print the percent */
 	private double statisticFeedBack;
 
+	/* --------------------------------------------------------- */
+	/* Constructors */
+	/* --------------------------------------------------------- */
 	public ReputedProvider(IProvider provider, double reputation) {
 		this.provider = provider;
 		this.reputation = reputation;
 	}
 
+	/* --------------------------------------------------------- */
+	/* public methods */
+	/* --------------------------------------------------------- */
 	@Override
 	public int compareTo(ReputedProvider o) {
 		if (reputation == o.getReputation()) {
@@ -34,7 +45,9 @@ public class ReputedProvider implements Comparable<ReputedProvider> {
 				+ statisticFeedBack + "%";
 	}
 
-	/* ------- GETTER & SETTER -------- */
+	/* --------------------------------------------------------- */
+	/* Getter & Setter */
+	/* --------------------------------------------------------- */
 	public double getReputation() {
 		return reputation;
 	}
