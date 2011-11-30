@@ -25,11 +25,15 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
+	//Simulation1(int interactionNumber, int serviceNumber, int totalUserNumber, int goodUser, int goodTurnBadUser, int fluctuateUser, int frequencyOfFluctuation, int badUser, int badTurnGoodUser, int honestRater, int dishonestRater, int randomRater, int collusiveGroups, int resourceAvailable, int dataLost, int choosingStrategy){
+
 	public Simulation2(int interactionNumber, int serviceNumber,
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
-		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,
-				badUser, dataLostPercent, choosingStrategy);
+		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,0,0,0,
+				badUser, 0, 100, 0, 0, 0, 100, dataLostPercent, choosingStrategy);
 		userGUI = new HashMap<String, UserGUI>();
+		//For testing simulation2
+		//		Simulation.LOG_ENABLED = 1;
 	}
 
 	/* --------------------------------------------------------- */
@@ -46,9 +50,11 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		int xb = user2.getX();
 		int ya = user1.getY();
 		int yb = user2.getY();
-		return Math.sqrt(Math.pow(xb-xa, 2) + Math.pow(yb-ya, 2));
+		int minDeltax = Math.min(Math.abs(xa-xb), Simulator.SIMULATION_SIZE-Math.abs(xa-xb));
+		int minDeltay = Math.min(Math.abs(ya-yb), Simulator.SIMULATION_SIZE-Math.abs(ya-yb));		
+		return Math.sqrt(Math.pow(minDeltax, 2) + Math.pow(minDeltay, 2));
 	}
-	
+
 	/**
 	 * 
 	 * @param interaction
@@ -61,17 +67,17 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		int py = provider.getY();
 		int cx = consumer.getX();
 		int cy = consumer.getY();
-		
-//		System.out.println("Provider:");
-//		System.out.println("\t-QoS: " + interaction.getProvider().getQoS());
-//		System.out.println("\t-x: " + provider.getX());
-//		System.out.println("\t-y: " + provider.getY());
-//		System.out.println("\t-color: " + provider.getColor());
-//		System.out.println("Consumer:");
-//		System.out.println("\t-x: " + consumer.getX());
-//		System.out.println("\t-y: " + consumer.getY());
-//		System.out.println("\t-color: " + consumer.getColor());
-//		System.out.println("Interaction feedback = " + interaction.getFeedback());
+
+		//		System.out.println("Provider:");
+		//		System.out.println("\t-QoS: " + interaction.getProvider().getQoS());
+		//		System.out.println("\t-x: " + provider.getX());
+		//		System.out.println("\t-y: " + provider.getY());
+		//		System.out.println("\t-color: " + provider.getColor());
+		//		System.out.println("Consumer:");
+		//		System.out.println("\t-x: " + consumer.getX());
+		//		System.out.println("\t-y: " + consumer.getY());
+		//		System.out.println("\t-color: " + consumer.getColor());
+		//		System.out.println("Interaction feedback = " + interaction.getFeedback());
 
 		// MOVING X
 		double distance = getDistance(provider, consumer);
@@ -89,8 +95,8 @@ public class Simulation2 extends Simulation1 implements Runnable {
 				cx = Simulator.SIMULATION_SIZE + cx;
 			}
 		}
-
-		// MOVING Y
+		
+		//		 MOVING Y
 		if((interaction.getFeedback()>0.5 && cy<py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)) || 
 				(interaction.getFeedback()<=0.5 && cy>=py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION))){
 			cy = (cy + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
@@ -104,37 +110,58 @@ public class Simulation2 extends Simulation1 implements Runnable {
 			if(cy < 0) {
 				cy = Simulator.SIMULATION_SIZE + cy;
 			}
+		}	
+
+		// COLOR CHANGE
+		if(interaction.getFeedback()>0.5) {
+			if(provider.getG() <= 253){
+				provider.setG(provider.getG()+2);
+			}
+			if(consumer.getG() <= 253){
+				consumer.setG(consumer.getG()+2);
+			}
+		} else {
+			if(provider.getR() <= 253){
+				provider.setR(provider.getR()+2);
+			}
+			if(consumer.getR() <= 253){
+				consumer.setR(consumer.getR()+2);
+			}
 		}
 
 		// EXCHANGE POSITION
-		UserGUI user1 = userGUI.get("x" + px + "y" + py);
-//		System.out.println("provider move to");
-//		System.out.println("\t-x: " + user1.getX());
-//		System.out.println("\t-y: " + user1.getY());
-//		System.out.println("\t-color: " + user1.getColor());
-		
-		user1.setX(provider.getX());
-		user1.setY(provider.getY());
-		provider.setX(px);
-		provider.setY(py);
-		putUserGUI(user1);
-		putUserGUI(provider);
-		userGUI = getUserGUIList(); // update userGUI
+		UserGUI user1 = userGUI.get("x" + px + "y" + py); //get the user in the new position of provider
+		if(user1 != null) {
+			//		System.out.println("provider move to");
+			//		System.out.println("\t-x: " + user1.getX());
+			//		System.out.println("\t-y: " + user1.getY());
+			//		System.out.println("\t-color: " + user1.getColor());
 
-		UserGUI user2 = userGUI.get("x" + cx + "y" + cy);
-//		System.out.println("consumer move to");
-//		System.out.println("\t-x: " + user2.getX());
-//		System.out.println("\t-y: " + user2.getY());
-//		System.out.println("\t-color: " + user2.getColor());
-		
-		user2.setX(consumer.getX());
-		user2.setY(consumer.getY());
-		consumer.setX(cx);
-		consumer.setY(cy);
-		putUserGUI(user2);
-		putUserGUI(consumer);
-		
-//		System.out.println("\n-----\n");
+			user1.setX(provider.getX());
+			user1.setY(provider.getY()); //set user in provider's new position to provider's old one
+			provider.setX(px);
+			provider.setY(py); //set provider to new position
+			putUserGUI(user1);
+			putUserGUI(provider);
+			userGUI = getUserGUIList(); // get updated userGUI, maybe unnecessary because getUserGUIList() makes a shallow copy 
+		}
+
+		UserGUI user2 = userGUI.get("x" + cx + "y" + cy); //user2=user in consumer's new position
+		if(user2 != null) {
+			//		System.out.println("consumer move to");
+			//		System.out.println("\t-x: " + user2.getX());
+			//		System.out.println("\t-y: " + user2.getY());
+			//		System.out.println("\t-color: " + user2.getColor());
+
+			user2.setX(consumer.getX());
+			user2.setY(consumer.getY()); //move user2 to consumer's old position
+			consumer.setX(cx);
+			consumer.setY(cy); //move consumer to new position
+			putUserGUI(user2);
+			putUserGUI(consumer); //update userGUI
+		}
+
+		//		System.out.println("\n-----\n");
 	}
 
 	/* --------------------------------------------------------- */
@@ -172,22 +199,20 @@ public class Simulation2 extends Simulation1 implements Runnable {
 
 			// COMPUTE
 			List<Interaction> interactions = new ArrayList<Interaction>();
-			int i = 0;
-			while (i < getInteractionNumber()) {
+			for (int i = 0; i < getInteractionNumber(); i++) {
 				Interaction interaction = createInteraction(i);
 				if(interaction != null) {
 					interactions.add(interaction);
 					movePeer(interaction);
-					i++;
 					setInteractionCount(interactionCount+1);
+				} else {
+					i--;
 				}
-//				else {
-//					System.out.println("interaction null");
-//				}
 			}
 
 			// PRINT RESULT
 			extractData(interactions);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -27,8 +27,8 @@ public class Reputation {
 	private static double preRepScoreDefault=0.5;
 	private static double usefulnessDefault = 0.5, credDefault = 0.5;
 	private int pessiFactorDefault = 2;
-	private Map<IRater, Double> temporalFactor = new HashMap<IRater, Double>();
 	private static double usefulTolerance = 0.2;
+	private Map<IRater, Double> temporalFactor = new HashMap<IRater, Double>();
 	
 	/* --------------------------------------------------------- */
 	/* private Methods */
@@ -373,6 +373,7 @@ public class Reputation {
 			}
 		}
 	}
+
 	
 	/**
 	 * 
@@ -383,12 +384,12 @@ public class Reputation {
 	 */
 	public static double generateFeedback(IConsumer consumer, IProvider provider,
 			double perEval) {
-		if (consumer.getMyRaterType() == User.raterType.HONEST) {
+		if (consumer.getRaterType() == User.raterType.HONEST) {
 			return perEval;
 		}
 		double rating;
 		Random randomGenerator = new Random();
-		if (consumer.getMyRaterType() == User.raterType.DISHONEST) {
+		if (consumer.getRaterType() == User.raterType.DISHONEST) {//ratingTol=0.5
 			if (perEval > 0.7) {// the provider is supposed to be GOOD
 				rating = Math.max(
 						(double) 0,
@@ -416,7 +417,7 @@ public class Reputation {
 								/ (double) 100);
 			}
 			return rating;
-		} else if (consumer.getMyRaterType() == User.raterType.RANDOM) {// ratingTol=1
+		} else if (consumer.getRaterType() == User.raterType.RANDOM) {// ratingTol=1
 			if (randomGenerator.nextBoolean()) {// mean plus
 				rating = Math.min(
 						(double) 1,
@@ -439,7 +440,13 @@ public class Reputation {
 			if (consumer.getCollusionCode() == provider.getCollusionCode()) {
 				rating = 1;// give the highest rating to my collusion
 				return rating;
+			} 
+			//bad rating for all the others
+			else {
+				rating = 0;
 			}
+			
+			/*Not implement victimCode
 			if (provider.getVictimCode() == null) {// not my victim, then be
 													// honest
 				rating = perEval;
@@ -451,6 +458,7 @@ public class Reputation {
 			} else {// telling the truth
 				rating = perEval;
 			}
+			*/
 			return rating;
 		}
 	}

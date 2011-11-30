@@ -1,7 +1,5 @@
 package edu.lognet.reputation.view.gui;
 
-import org.eclipse.swt.SWT;
-
 import edu.lognet.reputation.model.user.User;
 
 
@@ -11,7 +9,9 @@ public class UserGUI {
 	private User user;
 	private int x;
 	private int y;
-	private int color;
+	private int r;
+	private int g;
+	private int b;
 	
 	
 	// clone
@@ -19,7 +19,9 @@ public class UserGUI {
 		this.user = userGUIStatus.user;
 		this.x = userGUIStatus.x;
 		this.y = userGUIStatus.y;
-		this.color = userGUIStatus.color;
+		this.r = 0;
+		this.g = 0;
+		this.b = 0;
 	}
 
 	public UserGUI(User user, int x, int y) {
@@ -27,24 +29,24 @@ public class UserGUI {
 		this.user = user;
 		this.x = x;
 		this.y = y;
-		switch (user.getMyProviderType()) {
+		switch (user.getProviderType()) {
 		case GOOD:
-			color = SWT.COLOR_GREEN;
+//			setG(255);
 			break;
 		case GOODTURNSBAD:
-			color = SWT.COLOR_DARK_GREEN;
-			break;
-		case BAD:
-			color = SWT.COLOR_RED;
-			break;
-		case BADTURNSGOOD:
-			color = SWT.COLOR_DARK_RED;
+//			color = SWT.COLOR_DARK_GREEN;
 			break;
 		case FLUCTUATE:
-			color = SWT.COLOR_BLACK;
+			break;
+		case BAD:
+//			setR(255);
+			break;
+		case BADTURNSGOOD:
 			break;
 		case NORMAL:
-			color = SWT.COLOR_WHITE;
+//			setR(255);
+//			setG(255);
+//			setB(255);
 			break;
 		default:
 			break;
@@ -75,14 +77,37 @@ public class UserGUI {
 		this.y = y;
 	}
 
-	public int getColor() {
-		return color;
+//	public int getColor() {
+//		return new Color(r, g, b).getRGB();
+//	}
+
+//	public void setColor(int r, int g, int b) {
+//		this.r = r;
+//		this.g = g;
+//		this.b = b;
+//	}
+
+	public int getR() {
+		return r;
 	}
 
-	public void setColor(int color) {
-		this.color = color;
+	public void setR(int r) {
+		this.r = r;
 	}
-	
-	
-	
+
+	public int getG() {
+		return g;
+	}
+
+	public void setG(int g) {
+		this.g = g;
+	}
+
+	public int getB() {
+		return b;
+	}
+
+	public void setB(int b) {
+		this.b = b;
+	}
 }

@@ -16,21 +16,23 @@ public class Experience {
 	//Thao added
 	private double perEval;//equal to feedback if user honest
 	private double preRepScore;//having similar timestamp to feedback.
+	private int numUses;//number of times using the service provided by the provider
 	//Thao end
 	
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
 	//Thao added
-	public Experience(double feedback, long lastExp, double perEval, double repScore){
+	public Experience(double feedback, long lastExp, double perEval, double repScore, int numUses){
 		this.feedback = feedback;
 		this.lastTimeExp = lastExp;
 		this.perEval = perEval;
 		this.preRepScore = repScore;
+		this.numUses = numUses;
 	}
 	
-	public Experience(double feedback, double perEval, double repScore){
-		this(feedback, System.currentTimeMillis(), perEval, repScore);
+	public Experience(double feedback, double perEval, double repScore, int numUses){
+		this(feedback, System.currentTimeMillis(), perEval, repScore, numUses);
 	}
 	//Thao end
 
@@ -65,6 +67,14 @@ public class Experience {
 
 	public void setLastTimeExp(long lastExp) {
 		this.lastTimeExp = lastExp;
+	}
+
+	public void setNumUses(int numUses){
+		this.numUses = numUses;
+	}
+	
+	public int getNumUses(){
+		return numUses;
 	}
 
 }

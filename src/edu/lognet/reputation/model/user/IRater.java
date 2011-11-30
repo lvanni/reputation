@@ -2,6 +2,7 @@ package edu.lognet.reputation.model.user;
 
 import edu.lognet.reputation.model.experience.Experience;
 import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IRater.raterType;
 
 
 
@@ -25,4 +26,6 @@ public interface IRater {
 	 * @return
 	 */
 	public Experience getConsumerExp(IProvider provider, Service service);
+
+	raterType getRaterType();
 }

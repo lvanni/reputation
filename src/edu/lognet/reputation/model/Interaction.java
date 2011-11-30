@@ -1,8 +1,12 @@
 package edu.lognet.reputation.model;
 
+import java.util.Map;
+
+import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.IConsumer;
 import edu.lognet.reputation.model.user.IProvider;
+import edu.lognet.reputation.model.user.IRater;
 import edu.lognet.reputation.model.user.User;
 
 /**
@@ -23,13 +27,14 @@ public class Interaction {
 	private double personalEval;
 	private double estimatedRepScore;
 	private double dataLost;
+	private Map<IRater, Credibility> credibilityOfRatersForChosenProvider;
 	//Thao end
 		
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
 	//Thao added
-	public Interaction(IProvider provider, IConsumer consumer, Service service, double feedback, double perEval, double repScore, double dataLost) {
+	public Interaction(IProvider provider, IConsumer consumer, Service service, double feedback, double perEval, double repScore, double dataLost, Map<IRater, Credibility> credibilityOfRatersForChosenProvider) {
 		this.provider = provider;
 		this.consumer = consumer;
 		this.service = service;
@@ -37,6 +42,7 @@ public class Interaction {
 		this.personalEval = perEval;
 		this.estimatedRepScore = repScore;
 		this.dataLost = dataLost;
+		this.credibilityOfRatersForChosenProvider = credibilityOfRatersForChosenProvider;
 	}
 	//Thao end
 	
@@ -48,7 +54,7 @@ public class Interaction {
 		//Thao commented
 		//return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback;
 		//Thao added
-		return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback + "\t\t" + personalEval + "\t\t" + estimatedRepScore + "\t\t" + dataLost;
+		return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback + "\t\t" + personalEval + "\t\t" + estimatedRepScore + "\t\t" + dataLost +"\t\t" + credibilityOfRatersForChosenProvider;
 		//Thao end
 	}
 
@@ -97,5 +103,9 @@ public class Interaction {
 
 	public double getEstimatedScore() {
 		return estimatedRepScore;
+	}
+	
+	public Map<IRater, Credibility> getCredibilityOfRatersForChosenProvider() {
+		return credibilityOfRatersForChosenProvider;
 	}
 }

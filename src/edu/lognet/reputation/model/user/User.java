@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.lognet.reputation.controller.core.Gaussian;
+import edu.lognet.reputation.controller.core.utils.Gaussian;
 import edu.lognet.reputation.controller.simulations.Simulation;
 import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
@@ -25,32 +25,40 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	/* Attributes */
 	/* --------------------------------------------------------- */
 	private Service currentService;
-	private double QoS;
-	private Map<Service, Map<IProvider, Experience>> experiences;
-	private Map<Service, Map<IRater, Credibility>> credibilityOfRater;
-	private double reputedScore;
 	private providerType myProviderType;
 	private raterType myRaterType;
 	private collusionGroup collusionCode;
 	private victimGroup victimCode;
+	private double initQoS;
+	private double QoS;
+	private int resourceAvailable;
+	private int frequencyOfFluctuation;
+	private Map<Service, Map<IProvider, Experience>> experiences;
+	private Map<Service, Map<IRater, Credibility>> credibilityOfRater;
+	private double reputedScore;
 	private double ratingTol;
+	
+	public int numProvison;
 
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
 	public User(String id, String name, int age, Service currentService,
-			double QoS, providerType pType, raterType rType,
-			collusionGroup cGroup, victimGroup vGroup) {
+			providerType pType, raterType rType,
+			collusionGroup cGroup, double QoS, int resourceAvailable, int frequencyOfFluctuation) {
 		super(id, name, age);
 		this.currentService = currentService;
-		this.QoS = QoS;
-		this.experiences = new HashMap<Service, Map<IProvider, Experience>>();
-		this.credibilityOfRater = new HashMap<Service, Map<IRater, Credibility>>();
-		this.reputedScore = 0;
 		this.myProviderType = pType;
 		this.myRaterType = rType;
 		this.collusionCode = cGroup;
-		this.victimCode = vGroup;
+		this.initQoS = QoS;
+		this.QoS = QoS;
+		this.resourceAvailable = resourceAvailable;
+		this.frequencyOfFluctuation = frequencyOfFluctuation;
+		//initiate
+		this.experiences = new HashMap<Service, Map<IProvider, Experience>>();
+		this.credibilityOfRater = new HashMap<Service, Map<IRater, Credibility>>();
+		this.reputedScore = 0;
 		if (rType.compareTo(raterType.HONEST) == 0) {
 			this.ratingTol = 0.0;
 		} else if (rType.compareTo(raterType.RANDOM) == 0) {
@@ -58,22 +66,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		} else { // DISHONEST and COLLUSIVE
 			this.ratingTol = 0.5;
 		}
-
-	}
-
-	public User(String id, String name, int age, Service service,
-			providerType pType, double qoS) {
-		super(id, name, age);
-		this.currentService = service;
-		this.QoS = qoS;
-		this.experiences = new HashMap<Service, Map<IProvider, Experience>>();
-		this.credibilityOfRater = new HashMap<Service, Map<IRater, Credibility>>();
-		this.reputedScore = 0;
-		this.myProviderType = pType;
-		this.myRaterType = raterType.HONEST;
-		this.collusionCode = null;
-		this.victimCode = null;
-		ratingTol = 0.0;// don't know raterType, so be HONEST
+		this.numProvison = 0;
 	}
 
 	/* --------------------------------------------------------- */
@@ -161,19 +154,19 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 					break;
 				}
 			}
-
+			//take the list from index up to (size-1)
 			List<ReputedProvider> croppedProvList = new ArrayList<ReputedProvider>();
 			for (int i = index; i < size; i++) {
-				croppedProvList.add(reputedProviderList.get(i));
+				croppedProvList.add(reputedProviderList.get(i));//not really copy, just referring
 			}
-
+			//apply Gaussian to croppedProvList
 			size = croppedProvList.size();
 			Gaussian gaussian = new Gaussian(Math.sqrt(size) / 2, 0.0);
 			double[] d = new double[size];
 			double sum = 0.0;
 
 			for (int x = 0; x < size; x++) {
-				d[x] = gaussian.getY(x - size + 1) * 100;
+				d[x] = gaussian.getY(x - size + 1) * 100;//take the left side of Gaussian distribution because provider list is ascending
 			}
 
 			Map<Double, Double> percentMap = new HashMap<Double, Double>();
@@ -191,17 +184,20 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			}
 
 			if (Simulation.LOG_ENABLED == 1) {
+				System.out.println("INFO: Cropped Provider list:");				
 				for (ReputedProvider reputedProvider : croppedProvList) {
 					System.out.println(reputedProvider);
 				}
 			}
 
 			double statisticFactor = Math.random() * 100;
+			// Dichotomic search: find provider having StaFactor closest to the random value
 			int i = size / 2;
 			while (size != 0) {
 				if (croppedProvList.get(i).getStatisticFactor() == statisticFactor) {
 					break;
 				} else if (croppedProvList.get(i).getStatisticFactor() < statisticFactor) {
+					//size is odd
 					if (size % 2 == 1) {
 						i += size / 4 + 1;
 					} else {
@@ -247,6 +243,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			}
 
 			if (Simulation.LOG_ENABLED == 1) {
+				System.out.println("INFO: Provider list with updated statistic factor:");				
 				for (ReputedProvider reputedProvider : reputedProviderList) {
 					System.out.println(reputedProvider);
 				}
@@ -274,6 +271,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			break;
 		}
 		default: {
+			//choose highest
 			db = reputedProviderList.get(size - 1).getReputation();
 			chosenProvider = reputedProviderList.get(size - 1).getProvider();
 			break;
@@ -293,6 +291,31 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		return chosenProvider;
 	}
 
+	public void changeBehaviour() {
+		if (myProviderType==providerType.GOODTURNSBAD) {
+			if (numProvison==resourceAvailable/2) {
+				QoS = Math.max(0, Math.round((initQoS-0.7)*100)/(double)100);//actually always >0 because initQoS>=0.75					
+			}
+			return;
+		}
+		if (myProviderType==providerType.FLUCTUATE) {
+			if ((numProvison!=0)&&(numProvison%(frequencyOfFluctuation*resourceAvailable/100)==0)) {
+				if (QoS == initQoS) {
+					QoS = Math.max(0, Math.round((initQoS-0.7)*100)/(double)100);
+				} else {
+					QoS = initQoS;
+				} 
+			} 
+			return;
+		}
+		if (myProviderType==providerType.BADTURNSGOOD) {
+			if (numProvison==resourceAvailable/2) {
+				QoS = Math.min(1, Math.round((initQoS+0.7)*100)/(double)100);//actually always <1 since initQoS<=0.25						
+			}
+			return;
+		}
+	}
+
 	/* --------------------------------------------------------- */
 	/* Others Override Methods */
 	/* --------------------------------------------------------- */
@@ -300,11 +323,6 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	public String toString() {
 		return "\t" + getId() + "\t\t" + getName() + "\t\t" + getAge() + "\t\t"
 				+ getProvidedService().getId() + "\t\t" + getQoS();
-	}
-
-	@Override
-	public raterType getMyRaterType() {
-		return myRaterType;
 	}
 
 	@Override
@@ -322,14 +340,6 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		return victimCode;
 	}
 
-	public providerType getMyProviderType() {
-		return myProviderType;
-	}
-
-	public void setMyProviderType(providerType myProviderType) {
-		this.myProviderType = myProviderType;
-	}
-
 	@Override
 	public Service getProvidedService() {
 		return currentService;
@@ -340,6 +350,10 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		this.currentService = providedService;
 	}
 
+	public double getInitQoS() {
+		return initQoS;
+	}
+	
 	@Override
 	public double getQoS() {
 		return QoS;
@@ -359,4 +373,30 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	public double getReputedScore() {
 		return reputedScore;
 	}
+
+	@Override
+	public void increaseNumProvison() {
+		numProvison++;
+	}
+
+	@Override
+	public int getNumProvision() {
+		return numProvison;
+	}
+
+	@Override
+	public int getResourceAvailable() {
+		return resourceAvailable;
+	}
+
+	@Override
+	public providerType getProviderType() {
+		return myProviderType;
+	}
+
+	@Override
+	public raterType getRaterType() {
+		return myRaterType;
+	}
+
 }

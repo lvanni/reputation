@@ -48,7 +48,7 @@ public interface IConsumer {
 	 */
 	public Map<IRater, Credibility> getCredibilityOfRater(Service service);
 
-	public User.raterType getMyRaterType();
+	public User.raterType getRaterType();
 
 	public double getRatingTol();
 

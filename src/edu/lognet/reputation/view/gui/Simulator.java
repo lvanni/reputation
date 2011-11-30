@@ -7,6 +7,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -24,15 +25,15 @@ public class Simulator {
 	/* --------------------------------------------------------- */
 	/* Attributes */
 	/* --------------------------------------------------------- */
-	private static final int TIMER_INTERVAL = 100;
-	public static final int SIMULATION_SIZE = 400;
+	private static final int TIMER_INTERVAL = 10;
+	public static final int SIMULATION_SIZE = 300;
 	public static final int SIMULATION_PRECISION = 8;
 
 	private final Shell shell;
 	private Display display;
 
-	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel;
-	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, counter;
+	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel, counter;
+	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost;
 	private final Button strategy1, strategy2, strategy3;
 
 	private Canvas canvas;
@@ -65,6 +66,7 @@ public class Simulator {
 		interactionNumberLabel.setLayoutData(addressFormData);
 
 		interactionNumber = new Text(shell, SWT.BORDER);
+		interactionNumber.setText("10000");
 		FormData addressTextFormData = new FormData();
 		addressTextFormData.width = 160;
 		addressTextFormData.height = 15;
@@ -80,6 +82,7 @@ public class Simulator {
 		serviceNumberLabel.setLayoutData(zipFormData);
 
 		serviceNumber = new Text(shell, SWT.BORDER);
+		serviceNumber.setText("1000");
 		FormData serviceNumberFormData = new FormData();
 		serviceNumberFormData.width = 160;
 		serviceNumberFormData.height = 15;
@@ -112,6 +115,7 @@ public class Simulator {
 		goodUserLabel.setLayoutData(timeFormData);
 
 		goodUser = new Text(shell, SWT.BORDER);
+		goodUser.setText("50");
 		FormData hourTextFormData = new FormData();
 		hourTextFormData.width = 160;
 		hourTextFormData.height = 15;
@@ -128,6 +132,7 @@ public class Simulator {
 
 		badUser = new Text(shell, SWT.BORDER);
 		FormData badUserTextFormData = new FormData();
+		badUser.setText("50");
 		badUserTextFormData.width = 160;
 		badUserTextFormData.height = 15;
 		badUserTextFormData.top = new FormAttachment(goodUser, 0);
@@ -142,6 +147,7 @@ public class Simulator {
 		dataLostLabel.setLayoutData(dataLostFormData);
 
 		dataLost = new Text(shell, SWT.BORDER);
+		dataLost.setText("0");
 		FormData dataLostTextFormData = new FormData();
 		dataLostTextFormData.width = 160;
 		dataLostTextFormData.height = 15;
@@ -215,8 +221,7 @@ public class Simulator {
 					Map <String, UserGUI> userGUIStatus = simulation.getUserGUIList();
 					for (String userId : userGUIStatus.keySet()) {
 						UserGUI userGUI = userGUIStatus.get(userId);
-						event.gc.setBackground(event.display.getSystemColor(userGUI.getColor()));
-//						event.gc.drawPoint(userGUI.getX(), userGUI.getY());
+						event.gc.setBackground(new Color(event.display, userGUI.getR(), userGUI.getG(), userGUI.getB()));
 						event.gc.fillRectangle(userGUI.getX(), userGUI.getY(), SIMULATION_PRECISION, SIMULATION_PRECISION);
 					}
 				}
@@ -232,23 +237,22 @@ public class Simulator {
 		separator.setLayoutData(separator1FormData);
 		
 		counterLabel = new Label(shell, SWT.NONE);
-		counterLabel.setText("counter : ");
+		counterLabel.setText("Nb interaction: ");
 		FormData counterLabelFormData = new FormData();
-		counterLabelFormData.top = new FormAttachment(separator, 0);
+		counterLabelFormData.top = new FormAttachment(separator, 10);
 		counterLabelFormData.left = new FormAttachment(0, 0);
 		counterLabel.setLayoutData(counterLabelFormData);
 
-		counter = new Text(shell, SWT.BORDER);
+		counter = new Label(shell, SWT.NONE);
 		counter.setText("0");
-		counter.setEditable(false);
 		FormData counterFormData = new FormData();
 		counterFormData.width = 160;
 		counterFormData.height = 15;
-		counterFormData.top = new FormAttachment(separator, 0);
-		counterFormData.left = new FormAttachment(0, 150);
+		counterFormData.top = new FormAttachment(separator, 10);
+		counterFormData.left = new FormAttachment(0, 100);
 		counter.setLayoutData(counterFormData);
 
-		// button "SEND"
+		// button "Start"
 		final Button okButton = new Button(shell, SWT.PUSH);
 		okButton.setText("Start");
 		okButton.addSelectionListener(new SelectionAdapter() {
@@ -286,7 +290,7 @@ public class Simulator {
 		okButton.setLayoutData(okFormData);
 		shell.setDefaultButton(okButton);
 
-		// button "CLEAR"
+		// button "Stop"
 		final Button clearButton = new Button(shell, SWT.PUSH);
 		clearButton.setText("Stop");
 		clearButton.addSelectionListener(new SelectionAdapter() {

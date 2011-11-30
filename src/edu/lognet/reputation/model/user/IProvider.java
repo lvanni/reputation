@@ -1,6 +1,7 @@
 package edu.lognet.reputation.model.user;
 
 import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IProvider.providerType;
 import edu.lognet.reputation.model.user.User.collusionGroup;
 import edu.lognet.reputation.model.user.User.victimGroup;
 
@@ -14,9 +15,9 @@ public interface IProvider {
 	public static enum providerType {
 		GOOD,
 		GOODTURNSBAD,
-		BADTURNSGOOD,
 		FLUCTUATE,
 		BAD,
+		BADTURNSGOOD,		
 		NORMAL
 	}
 
@@ -49,4 +50,16 @@ public interface IProvider {
 	public victimGroup getVictimCode();
 
 	public double getReputedScore();
+
+	public void increaseNumProvison();
+
+	public int getNumProvision();
+
+	public int getResourceAvailable();
+
+	public void changeBehaviour();
+
+	public double getInitQoS();
+
+	public providerType getProviderType();
 }

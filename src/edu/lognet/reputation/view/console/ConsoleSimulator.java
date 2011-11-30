@@ -53,19 +53,60 @@ public class ConsoleSimulator {
 					int serviceNumber = Integer.parseInt(in.readLine());
 					System.out.print("User Number: ");
 					int totalUserNumber = Integer.parseInt(in.readLine());
-					System.out.print("Good User Percent : ");
-					int goodUser = Integer.parseInt(in.readLine());
-					System.out.print("Bad User Percent : ");
-					int badUser = Integer.parseInt(in.readLine());
+					
+					int goodUser=0, goodTurnBadUser=0, fluctuateUser=0, frequencyOfFluctuation=0;
+					int badUser=0, badTurnGoodUser=0;
+					System.out.print("Good Provider Percent : ");
+					goodUser = Integer.parseInt(in.readLine());
+					if (goodUser<100) {
+						System.out.print("GoodTurnsBad Provider Percent : ");
+						goodTurnBadUser = Integer.parseInt(in.readLine());
+						if ((goodUser+goodTurnBadUser)<100) {
+							System.out.print("Fluctuate Provider Percent : ");
+							fluctuateUser = Integer.parseInt(in.readLine());
+							System.out.print("Frequency of Fluctuate Provider (% of resourceAvailable): ");
+							frequencyOfFluctuation = Integer.parseInt(in.readLine());
+							if ((goodUser+goodTurnBadUser+fluctuateUser)<100) {
+								System.out.print("Bad Provider Percent : ");
+								badUser = Integer.parseInt(in.readLine());
+								if ((goodUser+goodTurnBadUser+fluctuateUser+badUser)<100) {
+									System.out.print("BadTurnsGood Provider Percent : ");
+									badTurnGoodUser = Integer.parseInt(in.readLine());
+									System.out.print("The rest is Normal Provider Percent\n");
+								}
+							}
+						}						
+					}
+					
+					System.out.print("resourceAvailable (% of TotalTrnx) of each user : ");
+					int resourceAvailable = Integer.parseInt(in.readLine());					
+					
+					System.out.print("Honest Rater Percent : ");
+					int honestRater = Integer.parseInt(in.readLine());
+					int dishonestRater=0, randomRater=0, collusiveGroupNum=0;
+					if (honestRater<100) {
+						System.out.print("Dishonest Rater Percent : ");
+						dishonestRater = Integer.parseInt(in.readLine());
+						if ((honestRater+dishonestRater)<100) {
+							System.out.print("Random Rater Percent : ");
+							randomRater = Integer.parseInt(in.readLine());
+							if ((honestRater+dishonestRater+randomRater)<100) {
+								System.out.print("The rest is Collusive Rater Percent \n");
+								System.out.print("Number of collusive groups (even size) [1,3]: ");
+								collusiveGroupNum = Integer.parseInt(in.readLine());
+							}							
+						}
+					}
+					
 					System.out.print("Data Lost Percent : ");
-					int dataLost = Integer.parseInt(in.readLine());
+					int dataLost = Integer.parseInt(in.readLine());					
 					System.out.print("Choosing strategy : ");
 					System.out.print("\n\t1) choosing provider with highest score");
 					System.out.print("\n\t2) cropping provider list before choosing randomly on weighted Statistic Factor");
 					System.out.print("\n\t3) choosing randomly on weighted Statistic Factor");
 					System.out.print("\n------> ");
 					int choosingStrategy = Integer.parseInt(in.readLine());
-					experiment = new Simulation1(interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost, choosingStrategy);
+					experiment = new Simulation1(interactionNumber, serviceNumber, totalUserNumber, goodUser, goodTurnBadUser, fluctuateUser, frequencyOfFluctuation, badUser, badTurnGoodUser, honestRater, dishonestRater, randomRater, collusiveGroupNum, resourceAvailable, dataLost, choosingStrategy);
 					System.out.println("INFO: Experiment Created! Ready to start...");
 					break;
 				case 2 : 
