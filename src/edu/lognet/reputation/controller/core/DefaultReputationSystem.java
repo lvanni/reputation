@@ -9,29 +9,20 @@ import edu.lognet.reputation.model.user.IConsumer;
 import edu.lognet.reputation.model.user.IProvider;
 import edu.lognet.reputation.model.user.IRater;
 
-public interface IReputationSystem {
+public class DefaultReputationSystem implements IReputationSystem {
 
-	/**
-	 * 
-	 * @param service
-	 * @param provider
-	 * @param raters
-	 * @param consumer
-	 * @param credibilityOfRaterMap
-	 * @return
-	 */
+	@Override
 	public double getReputation(Service service, IProvider provider,
 			List<IRater> raters, IConsumer consumer,
-			Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap);
+			Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-	/**
-	 * 
-	 * @param consumer
-	 * @param service
-	 * @param provider
-	 * @param credibilityOfRater
-	 */
+	@Override
 	public void updateUsefulFactor(IConsumer consumer, Service service,
-			IProvider provider, Map<IRater, Credibility> credibilityOfRater);
+			IProvider provider, Map<IRater, Credibility> credibilityOfRater) {
+		// TODO Auto-generated method stub
+	}
 
 }

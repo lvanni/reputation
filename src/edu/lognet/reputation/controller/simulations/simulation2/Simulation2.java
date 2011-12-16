@@ -28,8 +28,6 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
-	//Simulation1(int interactionNumber, int serviceNumber, int totalUserNumber, int goodUser, int goodTurnBadUser, int fluctuateUser, int frequencyOfFluctuation, int badUser, int badTurnGoodUser, int honestRater, int dishonestRater, int randomRater, int collusiveGroups, int resourceAvailable, int dataLost, int choosingStrategy){
-
 	public Simulation2(int interactionNumber, int serviceNumber,
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,0,0,0,
@@ -69,21 +67,9 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		int cx = consumer.getX();
 		int cy = consumer.getY();
 
-		//		System.out.println("Provider:");
-		//		System.out.println("\t-QoS: " + interaction.getProvider().getQoS());
-		//		System.out.println("\t-x: " + provider.getX());
-		//		System.out.println("\t-y: " + provider.getY());
-		//		System.out.println("\t-color: " + provider.getColor());
-		//		System.out.println("Consumer:");
-		//		System.out.println("\t-x: " + consumer.getX());
-		//		System.out.println("\t-y: " + consumer.getY());
-		//		System.out.println("\t-color: " + consumer.getColor());
-		//		System.out.println("Interaction feedback = " + interaction.getFeedback());
-
 		// MOVING X
 		double distance = getDistance(provider, consumer);
-		if((interaction.getFeedback()>0.5 && cx<px && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)) || 
-				(interaction.getFeedback()<=0.5 && cx>=px && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION))){
+		if(cx<px && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)){
 			cx = (cx + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
 			px -= Simulator.SIMULATION_PRECISION;
 			if(px < 0) {
@@ -98,8 +84,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		}
 		
 		//		 MOVING Y
-		if((interaction.getFeedback()>0.5 && cy<py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)) || 
-				(interaction.getFeedback()<=0.5 && cy>=py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION))){
+		if(cy<py && distance>Simulator.SIMULATION_SIZE/(2*Simulator.SIMULATION_PRECISION)){
 			cy = (cy + Simulator.SIMULATION_PRECISION) % Simulator.SIMULATION_SIZE;
 			py -= Simulator.SIMULATION_PRECISION;
 			if(py < 0) {
@@ -133,11 +118,6 @@ public class Simulation2 extends Simulation1 implements Runnable {
 		// EXCHANGE POSITION
 		UserGUI user1 = userGUI.get("x" + px + "y" + py); //get the user in the new position of provider
 		if(user1 != null) {
-			//		System.out.println("provider move to");
-			//		System.out.println("\t-x: " + user1.getX());
-			//		System.out.println("\t-y: " + user1.getY());
-			//		System.out.println("\t-color: " + user1.getColor());
-
 			user1.setX(provider.getX());
 			user1.setY(provider.getY()); //set user in provider's new position to provider's old one
 			provider.setX(px);
@@ -149,11 +129,6 @@ public class Simulation2 extends Simulation1 implements Runnable {
 
 		UserGUI user2 = userGUI.get("x" + cx + "y" + cy); //user2=user in consumer's new position
 		if(user2 != null) {
-			//		System.out.println("consumer move to");
-			//		System.out.println("\t-x: " + user2.getX());
-			//		System.out.println("\t-y: " + user2.getY());
-			//		System.out.println("\t-color: " + user2.getColor());
-
 			user2.setX(consumer.getX());
 			user2.setY(consumer.getY()); //move user2 to consumer's old position
 			consumer.setX(cx);
@@ -162,7 +137,6 @@ public class Simulation2 extends Simulation1 implements Runnable {
 			putUserGUI(consumer); //update userGUI
 		}
 
-		//		System.out.println("\n-----\n");
 	}
 
 	/* --------------------------------------------------------- */
@@ -199,7 +173,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 			setup();
 
 			// COMPUTE
-			List<Interaction> interactions = new ArrayList<Interaction>();
+			final List<Interaction> interactions = new ArrayList<Interaction>();
 			for (int i = 0; i < getInteractionNumber(); i++) {
 				Interaction interaction = createInteraction(i);
 				if(interaction != null) {

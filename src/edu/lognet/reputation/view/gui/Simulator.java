@@ -8,6 +8,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -26,8 +27,9 @@ public class Simulator {
 	/* Attributes */
 	/* --------------------------------------------------------- */
 	private static final int TIMER_INTERVAL = 10;
-	public static final int SIMULATION_SIZE = 300;
+	public static final int SIMULATION_SIZE = 400;
 	public static final int SIMULATION_PRECISION = 8;
+	private static String BACKGROUND = "background.jpg";
 
 	private final Shell shell;
 	private Display display;
@@ -41,7 +43,7 @@ public class Simulator {
 	private Runnable view;
 	private Thread controller;
 	private	Simulation2 simulation = null;
-
+	
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
@@ -315,7 +317,40 @@ public class Simulator {
 			}
 		};
 
+		updateBackground(BACKGROUND);
 		shell.pack();
+	}
+	
+	/**
+	 * 
+	 * @param backgroundImagePath
+	 */
+	public void updateBackground(String backgroundImagePath) {
+		Image background = new Image(display, Simulator.class
+				.getResourceAsStream(backgroundImagePath));
+
+		shell.setBackgroundImage(background);
+		
+		interactionNumberLabel.setBackgroundImage(background);
+		serviceNumberLabel.setBackgroundImage(background);
+		totalUserNumberLabel.setBackgroundImage(background);
+		goodUserLabel.setBackgroundImage(background);
+		badUserLabel.setBackgroundImage(background);
+		dataLostLabel.setBackgroundImage(background);
+		separator.setBackgroundImage(background);
+		counterLabel.setBackgroundImage(background);
+		counter.setBackgroundImage(background);
+		
+		interactionNumber.setBackgroundImage(background);
+		serviceNumber.setBackgroundImage(background);
+		totalUserNumber.setBackgroundImage(background);
+		goodUser.setBackgroundImage(background);
+		badUser.setBackgroundImage(background);
+		dataLost.setBackgroundImage(background);
+		
+		strategy1.setBackgroundImage(background);
+		strategy2.setBackgroundImage(background);
+		strategy3.setBackgroundImage(background);
 	}
 
 	/* --------------------------------------------------------- */

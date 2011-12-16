@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import edu.lognet.reputation.controller.core.dev.ReputationSystem;
 import edu.lognet.reputation.controller.simulations.Simulation;
 import edu.lognet.reputation.model.Interaction;
 import edu.lognet.reputation.model.experience.Credibility;
@@ -28,11 +27,6 @@ import edu.lognet.reputation.model.user.User;
  */
 
 public class Simulation1 extends Simulation {
-
-	/* --------------------------------------------------------- */
-	/* Attributes */
-	/* --------------------------------------------------------- */
-	private static double observanceTolDefault = 0.01;
 
 	/* --------------------------------------------------------- */
 	/* Constructors */
@@ -103,7 +97,7 @@ public class Simulation1 extends Simulation {
 			return null;
 		}
 		
-		// THE CONSUMER CHOOSE A PROVIDER
+		// THE CONSUMER CHOOSE A PROVIDER (according to the strategy choosen)
 		Map<IRater, Credibility> credibilityOfRatersForChosenProvider = new HashMap<IRater, Credibility>();
 		Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap = new HashMap<IProvider, Map<IRater, Credibility>>();
 
@@ -136,11 +130,12 @@ public class Simulation1 extends Simulation {
 				dataLost = 1 - credibilityOfRatersForChosenProvider.size() / db;
 			}
 
+			double perEval = generatePerEval(chosenProvider);
+			
+			// GENERATE A FEEDBACK
+			double feedback = generateFeedback(consumer, chosenProvider, perEval);
+			
 			// ADJUST THE CONSUMER EXPERIENCE INCLUDING INFO & RATING(FeedBack)
-			double perEval = reputationSystem.generatePerEval(chosenProvider,
-					observanceTolDefault);
-			double feedback = reputationSystem.generateFeedback(consumer,
-					chosenProvider, perEval);
 			Experience oldExp = consumer
 					.getConsumerExp(chosenProvider, service);
 			Experience newExp;
@@ -152,12 +147,11 @@ public class Simulation1 extends Simulation {
 						chosenProvider.getReputedScore(),
 						oldExp.getNumUses() + 1);
 			}
-			Experience currentExp = ReputationSystem.adjustExperience(oldExp, newExp);
+			Experience currentExp = adjustExperience(oldExp, newExp);
 			consumer.setConsumerExp(chosenProvider, service, currentExp);
 
 			// ADJUST CREDIBILITY
-			reputationSystem.updateUsefulFactor(consumer, service, chosenProvider,
-					credibilityOfRatersForChosenProvider);
+			reputationSystem.updateUsefulFactor(consumer, service, chosenProvider, credibilityOfRatersForChosenProvider);
 
 			// UPDATE THE INTERACTION
 			interaction = new Interaction(chosenProvider, consumer, service,

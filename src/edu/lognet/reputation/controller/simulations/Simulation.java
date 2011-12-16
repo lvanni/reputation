@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import edu.lognet.reputation.controller.core.DefaultReputationSystem;
 import edu.lognet.reputation.controller.core.IReputationSystem;
-import edu.lognet.reputation.controller.core.dev.ReputationSystem;
 import edu.lognet.reputation.model.Interaction;
 import edu.lognet.reputation.model.experience.Credibility;
+import edu.lognet.reputation.model.experience.Experience;
 import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.IConsumer;
 import edu.lognet.reputation.model.user.IProvider;
@@ -52,6 +53,8 @@ public abstract class Simulation {
 
 	protected List<Service> services = getServiceSet();
 	protected List<User> users = getUserSet(services);
+	
+	private static double observanceTolDefault = 0.01;
 
 	/* --------------------------------------------------------- */
 	/* Constructors */
@@ -63,7 +66,8 @@ public abstract class Simulation {
 			int randomRater, int collusiveGroupNum, int resourceAvailable,
 			int dataLost, int chosenStrategy2) {
 		
-		this.reputationSystem = new ReputationSystem();
+		// CREATE YOUR REPUTATION ALGORITHM BY IMPLEMENTING: edu.lognet.reputation.controller.core.IReputationSystem
+		this.reputationSystem = new DefaultReputationSystem();
 		
 		this.interactionNumber = interactionNumber2;
 		this.serviceNumber = serviceNumber2;
@@ -299,6 +303,133 @@ public abstract class Simulation {
 
 		return reputedProviderList;
 	}
+	
+	/**
+	 * 
+	 * @param consumer
+	 * @param provider
+	 * @param perEval
+	 * @return
+	 */
+	public double generateFeedback(IConsumer consumer, IProvider provider,
+			double perEval) {
+		if (consumer.getRaterType() == User.raterType.HONEST) {
+			return perEval;
+		}
+		double rating;
+		Random randomGenerator = new Random();
+		if (consumer.getRaterType() == User.raterType.DISHONEST) {//ratingTol=0.5
+			if (perEval > 0.7) {// the provider is supposed to be GOOD
+				rating = Math.max(
+						(double) 0,
+						Math.round(perEval * 100 - consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			} else if (perEval < 0.4) {// BAD provider
+				rating = Math.min(
+						(double) 1,
+						Math.round(perEval * 100 + consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			} else if (randomGenerator.nextBoolean()) {// mean plus for NORMAL
+														// provider
+				rating = Math.min(
+						(double) 1,
+						Math.round(perEval * 100 + consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			} else {// mean minus for NORMAL provider
+				rating = Math.max(
+						(double) 0,
+						Math.round(perEval * 100 - consumer.getRatingTol()
+								* 100)
+								/ (double) 100);
+			}
+			return rating;
+		} else if (consumer.getRaterType() == User.raterType.RANDOM) {// ratingTol=1
+			if (randomGenerator.nextBoolean()) {// mean plus
+				rating = Math.min(
+						(double) 1,
+						Math.round(perEval
+								* 100
+								+ randomGenerator.nextInt((int) (consumer
+										.getRatingTol() * 100)))
+								/ (double) 100);
+			} else {// minus
+				rating = Math.max(
+						(double) 0,
+						Math.round(perEval
+								* 100
+								- randomGenerator.nextInt((int) (consumer
+										.getRatingTol() * 100)))
+								/ (double) 100);
+			}
+			return rating;
+		} else {// =raterType.COLLUSIVE
+			if (consumer.getCollusionCode() == provider.getCollusionCode()) {
+				rating = 1;// give the highest rating to my collusion
+				return rating;
+			} 
+			//bad rating for all the others
+			else {
+				rating = 0;
+			}
+			
+			/*Not implement victimCode
+			if (provider.getVictimCode() == null) {// not my victim, then be
+													// honest
+				rating = perEval;
+				return rating;
+			}
+			if (consumer.getCollusionCode().ordinal() == provider
+					.getVictimCode().ordinal()) {
+				rating = 0;
+			} else {// telling the truth
+				rating = perEval;
+			}
+			*/
+			return rating;
+		}
+	}
+
+	/**
+	 * 
+	 * @param provider
+	 * @return
+	 */
+	public double generatePerEval(IProvider provider) {
+		Random randomGenerator = new Random();
+		double value;
+		if (randomGenerator.nextBoolean()) {
+			value = Math.min(
+					(double) 1,
+					provider.getQoS()
+							+ randomGenerator.nextInt((int) (Math
+									.round(observanceTolDefault * 100)))
+							/ (double) 100);
+		} else {
+			value = Math.max(
+					(double) 0,
+					provider.getQoS()
+							- randomGenerator.nextInt((int) (Math
+									.round(observanceTolDefault * 100)))
+							/ (double) 100);
+		}
+		// value already has 2 decimal digits
+		double eval = Math.round(value * 100) / (double) 100;
+		return eval;
+	}
+	
+	/**
+	 * 
+	 * @param oldExp
+	 * @param newExp
+	 * @return
+	 */
+	public static Experience adjustExperience(Experience oldExp, Experience newExp) {
+		return newExp;
+	}
+	
 
 	/**
 	 * Start the experiements
