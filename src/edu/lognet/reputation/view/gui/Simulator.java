@@ -338,7 +338,6 @@ public class Simulator {
 		view = new Runnable() {
 			public void run() 
 			{
-				System.out.println("ok");
 				animate();
 				display.timerExec(TIMER_INTERVAL, this);
 			}
@@ -361,7 +360,6 @@ public class Simulator {
 	public void start() {
 		shell.open();
 		while (!shell.isDisposed()) {
-			System.out.println("ok");
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
