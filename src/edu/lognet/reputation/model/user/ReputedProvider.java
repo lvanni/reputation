@@ -2,7 +2,7 @@ package edu.lognet.reputation.model.user;
 
 /**
  * Represent a Provider associated to a reputation value
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  */
 public class ReputedProvider implements Comparable<ReputedProvider> {
 	

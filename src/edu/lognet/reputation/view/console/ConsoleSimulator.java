@@ -9,7 +9,7 @@ import edu.lognet.reputation.controller.simulations.simulation1.Simulation1;
 
 /**
  * Represent a Console UI for the simulator
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  * 
  */
 public class ConsoleSimulator {

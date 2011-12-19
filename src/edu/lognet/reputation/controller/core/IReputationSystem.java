@@ -11,7 +11,7 @@ import edu.lognet.reputation.model.user.IRater;
 
 /**
  * Represent a reputation system
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public interface IReputationSystem {

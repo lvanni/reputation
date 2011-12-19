@@ -13,7 +13,7 @@ import edu.lognet.reputation.model.user.IRater;
 
 /**
  * Represent a Service to consume
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class Service {

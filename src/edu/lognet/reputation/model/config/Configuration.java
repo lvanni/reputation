@@ -2,7 +2,7 @@ package edu.lognet.reputation.model.config;
 
 /**
  * This class represent the configuration of an Experiment
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class Configuration {

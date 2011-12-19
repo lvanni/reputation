@@ -25,7 +25,7 @@ import edu.lognet.reputation.model.user.User;
 /**
  * Represent the first type of simulation:
  * Allow to extract datas of each interation for plotting
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  */
 public class Simulation1 extends Simulation {
 

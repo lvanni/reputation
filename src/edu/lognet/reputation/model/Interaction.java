@@ -11,7 +11,7 @@ import edu.lognet.reputation.model.user.User;
 
 /**
  * Represent an Interaction One to One (producer/consumer)
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class Interaction {

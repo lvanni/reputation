@@ -2,7 +2,7 @@ package edu.lognet.reputation.model.user;
 
 /**
  * Represent an user into the system
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class AbstractUser {

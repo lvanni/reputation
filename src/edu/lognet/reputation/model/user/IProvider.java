@@ -6,7 +6,7 @@ import edu.lognet.reputation.model.user.User.victimGroup;
 
 /**
  * Represent a Provider in the simulator
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public interface IProvider {

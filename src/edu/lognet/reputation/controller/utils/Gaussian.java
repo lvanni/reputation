@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * Return A gaussian Curve
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  */
 public class Gaussian {
 

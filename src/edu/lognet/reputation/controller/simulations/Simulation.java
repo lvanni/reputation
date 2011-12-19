@@ -22,7 +22,7 @@ import edu.lognet.reputation.model.user.User;
 
 /**
  * Represent the engine of the simulator
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public abstract class Simulation {

@@ -1,0 +1,31 @@
+<!-- ============================= -->
+<!-- = Reputation Simulator		 = -->
+<!-- ============================= -->
+
+This Software is a simultor for a Reputation System.
+It comes with a default repuation system based on the
+average of values
+
+The repuation is represented as Double [0, 1]
+
+you can implements the interface edu.lognet.reputation.controller.core.IReputationSystem
+to create your repuation system
+
+This simulator provide 2 differents UI: 
+- A command line based UI, to extract data from the simulation for plotting
+- A GUI that represent a segregation Model build on top of the reputation system
+
+<!-- ========= -->
+<!-- = Usage = -->
+<!-- ========= -->
+
+# Console UI:
+$java -cp bin:lib edu.lognet.reputation.view.console.ConsoleSimulator
+
+# GUI:
+$java -cp bin:lib/swt.jar edu.lognet.reputation.view.gui.Simulator
+
+note: there's differents version of the swt library according to your jvm.
+select your version into the lib folder.
+
+L.V

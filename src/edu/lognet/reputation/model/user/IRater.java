@@ -8,7 +8,7 @@ import edu.lognet.reputation.model.service.Service;
 /**
  * Represent a Rater in the simulator
  * A Rater is an user who give a rating on an existing provider
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public interface IRater {

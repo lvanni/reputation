@@ -3,7 +3,7 @@ package edu.lognet.reputation.model.experience;
 
 /**
  * Represent the experience of an User in the system
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class Experience {

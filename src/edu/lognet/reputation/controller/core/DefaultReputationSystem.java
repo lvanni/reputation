@@ -12,7 +12,7 @@ import edu.lognet.reputation.model.user.IRater;
 
 /**
  * Implementation of a reputation system based on the average of values
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class DefaultReputationSystem implements IReputationSystem {

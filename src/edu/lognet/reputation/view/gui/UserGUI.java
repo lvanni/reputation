@@ -5,7 +5,7 @@ import edu.lognet.reputation.model.user.User;
 /**
  * Represent a Peer in the simulator with the position (x, y)
  * and the color
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public class UserGUI {

@@ -10,7 +10,7 @@ import edu.lognet.reputation.model.user.User.collusionGroup;
 
 /**
  * Represent a Consumer in the simulator
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  *
  */
 public interface IConsumer {

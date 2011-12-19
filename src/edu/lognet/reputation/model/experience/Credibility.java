@@ -8,7 +8,7 @@ import edu.lognet.reputation.model.user.IRater;
  * Represent the credibility of a Rater in a given service (for a given
  * consumer)
  * 
- * @author lvanni
+ * @author Laurent Vanni, Thao Nguyen
  */
 public class Credibility {
 	/* --------------------------------------------------------- */
