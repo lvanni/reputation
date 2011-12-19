@@ -5,7 +5,7 @@ import edu.lognet.reputation.model.user.User.collusionGroup;
 import edu.lognet.reputation.model.user.User.victimGroup;
 
 /**
- * 
+ * Represent a Provider in the simulator
  * @author lvanni
  *
  */

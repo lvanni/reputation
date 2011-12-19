@@ -12,7 +12,7 @@ import edu.lognet.reputation.model.user.IProvider.providerType;
 import edu.lognet.reputation.model.user.IRater;
 
 /**
- * 
+ * Represent a Service to consume
  * @author lvanni
  *
  */

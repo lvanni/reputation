@@ -9,6 +9,11 @@ import edu.lognet.reputation.model.user.IConsumer;
 import edu.lognet.reputation.model.user.IProvider;
 import edu.lognet.reputation.model.user.IRater;
 
+/**
+ * Represent a reputation system
+ * @author lvanni
+ *
+ */
 public interface IReputationSystem {
 
 	/**
@@ -32,6 +37,6 @@ public interface IReputationSystem {
 	 * @param credibilityOfRater
 	 */
 	public void updateUsefulFactor(IConsumer consumer, Service service,
-			IProvider provider, Map<IRater, Credibility> credibilityOfRater);
+			IProvider provider, Map<IRater, Credibility> credibilityOfRater, double feedback);
 
 }

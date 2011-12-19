@@ -9,7 +9,7 @@ import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.User.collusionGroup;
 
 /**
- * 
+ * Represent a Consumer in the simulator
  * @author lvanni
  *
  */

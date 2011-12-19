@@ -2,7 +2,7 @@ package edu.lognet.reputation.model.experience;
 
 
 /**
- * 
+ * Represent the experience of an User in the system
  * @author lvanni
  *
  */
@@ -11,18 +11,15 @@ public class Experience {
 	/* --------------------------------------------------------- */
 	/* Attributes */
 	/* --------------------------------------------------------- */
-	private double feedback;//as rating
-	private long lastTimeExp; // timestamp
-	//Thao added
-	private double perEval;//equal to feedback if user honest
-	private double preRepScore;//having similar timestamp to feedback.
-	private int numUses;//number of times using the service provided by the provider
-	//Thao end
+	private double feedback;	//as rating
+	private long lastTimeExp; 	// timestamp
+	private double perEval;		//equal to feedback if user honest
+	private double preRepScore;	//having similar timestamp to feedback.
+	private int numUses;		//number of times using the service provided by the provider
 	
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
-	//Thao added
 	public Experience(double feedback, long lastExp, double perEval, double repScore, int numUses){
 		this.feedback = feedback;
 		this.lastTimeExp = lastExp;
@@ -34,12 +31,10 @@ public class Experience {
 	public Experience(double feedback, double perEval, double repScore, int numUses){
 		this(feedback, System.currentTimeMillis(), perEval, repScore, numUses);
 	}
-	//Thao end
 
 	/* --------------------------------------------------------- */
 	/* GETTER & SETTER */
 	/* --------------------------------------------------------- */
-	//Thao added
 	public void setPreRepScore(double repScore){
 		this.preRepScore = repScore;
 	}
@@ -51,7 +46,6 @@ public class Experience {
 	public double getPerEval(){
 		return perEval;
 	}
-	//Thao end
 	
 	public double getFeedback() {
 		return feedback;

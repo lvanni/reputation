@@ -11,6 +11,12 @@ import edu.lognet.reputation.model.experience.Credibility;
 import edu.lognet.reputation.model.experience.Experience;
 import edu.lognet.reputation.model.service.Service;
 
+/**
+ * Represent an user in the System
+ * The User can be a Provider, a Consumer or a Rater
+ * @author lvanni
+ *
+ */
 public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 
 	public static enum collusionGroup {
@@ -219,13 +225,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 			double[] d = new double[size];
 			double sum = 0.0;
 			for (int x = 0; x < size; x++) {
-				d[x] = gaussian.getY(x - size + 1) * 100; // take the left
-															// side of
-															// Gaussian
-															// distribution
-															// because
-															// provider list
-															// is ascending
+				d[x] = gaussian.getY(x - size + 1) * 100; 
 			}
 
 			Map<Double, Double> percentMap = new HashMap<Double, Double>();
@@ -278,8 +278,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		}
 		}
 
-		chosenProvider.setReputedScore(db);// bring out the functions of
-											// ReputedProvider to IProvider
+		chosenProvider.setReputedScore(db);
 		
 		if (Simulation.LOG_ENABLED == 1) {
 			System.out.println("INFO: "
@@ -294,7 +293,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	public void changeBehaviour() {
 		if (myProviderType==providerType.GOODTURNSBAD) {
 			if (numProvison==resourceAvailable/2) {
-				QoS = Math.max(0, Math.round((initQoS-0.7)*100)/(double)100);//actually always >0 because initQoS>=0.75					
+				QoS = Math.max(0, Math.round((initQoS-0.7)*100)/(double)100); // actually always > 0 because initQoS>=0.75					
 			}
 			return;
 		}
@@ -310,7 +309,7 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 		}
 		if (myProviderType==providerType.BADTURNSGOOD) {
 			if (numProvison==resourceAvailable/2) {
-				QoS = Math.min(1, Math.round((initQoS+0.7)*100)/(double)100);//actually always <1 since initQoS<=0.25						
+				QoS = Math.min(1, Math.round((initQoS+0.7)*100)/(double)100); // actually always <1 since initQoS<=0.25						
 			}
 			return;
 		}

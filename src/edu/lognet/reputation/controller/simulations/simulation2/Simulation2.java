@@ -14,9 +14,11 @@ import edu.lognet.reputation.view.gui.Simulator;
 import edu.lognet.reputation.view.gui.UserGUI;
 
 /**
+ * Represent the second type of simulation:
+ * The result show a segregation model based on the
+ * reputation system
  * @author lvanni
  */
-
 public class Simulation2 extends Simulation1 implements Runnable {
 
 	/* --------------------------------------------------------- */

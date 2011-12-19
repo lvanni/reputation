@@ -23,9 +23,10 @@ import edu.lognet.reputation.model.user.ReputedProvider;
 import edu.lognet.reputation.model.user.User;
 
 /**
+ * Represent the first type of simulation:
+ * Allow to extract datas of each interation for plotting
  * @author lvanni
  */
-
 public class Simulation1 extends Simulation {
 
 	/* --------------------------------------------------------- */
@@ -151,7 +152,7 @@ public class Simulation1 extends Simulation {
 			consumer.setConsumerExp(chosenProvider, service, currentExp);
 
 			// ADJUST CREDIBILITY
-			reputationSystem.updateUsefulFactor(consumer, service, chosenProvider, credibilityOfRatersForChosenProvider);
+			reputationSystem.updateUsefulFactor(consumer, service, chosenProvider, credibilityOfRatersForChosenProvider, feedback);
 
 			// UPDATE THE INTERACTION
 			interaction = new Interaction(chosenProvider, consumer, service,

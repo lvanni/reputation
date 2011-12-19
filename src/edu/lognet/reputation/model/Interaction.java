@@ -33,7 +33,6 @@ public class Interaction {
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
-	//Thao added
 	public Interaction(IProvider provider, IConsumer consumer, Service service, double feedback, double perEval, double repScore, double dataLost, Map<IRater, Credibility> credibilityOfRatersForChosenProvider) {
 		this.provider = provider;
 		this.consumer = consumer;
@@ -44,18 +43,13 @@ public class Interaction {
 		this.dataLost = dataLost;
 		this.credibilityOfRatersForChosenProvider = credibilityOfRatersForChosenProvider;
 	}
-	//Thao end
 	
 	/* --------------------------------------------------------- */
 	/* Others Override Methods */
 	/* --------------------------------------------------------- */
 	@Override
 	public String toString() {
-		//Thao commented
-		//return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback;
-		//Thao added
 		return "\t" + service.getId() + "\t\t" + ((User) provider).getId() + "\t\t" + ((User) consumer).getId() + "\t\t" + feedback + "\t\t" + personalEval + "\t\t" + estimatedRepScore + "\t\t" + dataLost +"\t\t" + credibilityOfRatersForChosenProvider;
-		//Thao end
 	}
 
 	/* --------------------------------------------------------- */

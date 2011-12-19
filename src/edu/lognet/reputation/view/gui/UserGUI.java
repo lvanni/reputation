@@ -2,10 +2,16 @@ package edu.lognet.reputation.view.gui;
 
 import edu.lognet.reputation.model.user.User;
 
-
-
+/**
+ * Represent a Peer in the simulator with the position (x, y)
+ * and the color
+ * @author lvanni
+ *
+ */
 public class UserGUI {
-	
+	/* --------------------------------------------------------- */
+	/* Attributes */
+	/* --------------------------------------------------------- */
 	private User user;
 	private int x;
 	private int y;
@@ -14,7 +20,9 @@ public class UserGUI {
 	private int b;
 	
 	
-	// clone
+	/* --------------------------------------------------------- */
+	/* Constructors */
+	/* --------------------------------------------------------- */
 	public UserGUI(UserGUI userGUIStatus) {
 		this.user = userGUIStatus.user;
 		this.x = userGUIStatus.x;
@@ -31,28 +39,29 @@ public class UserGUI {
 		this.y = y;
 		switch (user.getProviderType()) {
 		case GOOD:
-//			setG(255);
+//			setG(50);
 			break;
 		case GOODTURNSBAD:
-//			color = SWT.COLOR_DARK_GREEN;
 			break;
 		case FLUCTUATE:
 			break;
 		case BAD:
-//			setR(255);
+//			setR(50);
 			break;
 		case BADTURNSGOOD:
 			break;
 		case NORMAL:
-//			setR(255);
-//			setG(255);
-//			setB(255);
+//			setR(50);
+//			setG(50);
 			break;
 		default:
 			break;
 		}
 	}
 
+	/* --------------------------------------------------------- */
+	/* GETTER AND SETTER */
+	/* --------------------------------------------------------- */
 	public User getUser() {
 		return user;
 	}
@@ -76,16 +85,6 @@ public class UserGUI {
 	public void setY(int y) {
 		this.y = y;
 	}
-
-//	public int getColor() {
-//		return new Color(r, g, b).getRGB();
-//	}
-
-//	public void setColor(int r, int g, int b) {
-//		this.r = r;
-//		this.g = g;
-//		this.b = b;
-//	}
 
 	public int getR() {
 		return r;

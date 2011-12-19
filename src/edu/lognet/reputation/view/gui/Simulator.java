@@ -21,6 +21,11 @@ import org.eclipse.swt.widgets.Text;
 
 import edu.lognet.reputation.controller.simulations.simulation2.Simulation2;
 
+/**
+ * Represent the GUI of the simulator
+ * @author lvanni
+ *
+ */
 public class Simulator {
 
 	/* --------------------------------------------------------- */
@@ -34,7 +39,7 @@ public class Simulator {
 	private final Shell shell;
 	private Display display;
 
-	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel, counter;
+	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel, counter, errorLabel;
 	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost;
 	private final Button strategy1, strategy2, strategy3;
 
@@ -43,7 +48,7 @@ public class Simulator {
 	private Runnable view;
 	private Thread controller;
 	private	Simulation2 simulation = null;
-	
+
 	/* --------------------------------------------------------- */
 	/* Constructors */
 	/* --------------------------------------------------------- */
@@ -156,7 +161,7 @@ public class Simulator {
 		dataLostTextFormData.top = new FormAttachment(badUser, 0);
 		dataLostTextFormData.left = new FormAttachment(0, 150);
 		dataLost.setLayoutData(dataLostTextFormData);
-		
+
 		// CHECKBOX
 		strategy1 = new Button(shell, SWT.CHECK);
 		strategy1.setSelection(true);
@@ -173,7 +178,7 @@ public class Simulator {
 				strategy3.setSelection(false);
 			}
 		});
-		
+
 		strategy2 = new Button(shell, SWT.CHECK);
 		strategy2.setSelection(true);
 		strategy2.setText("strategy2");
@@ -189,7 +194,7 @@ public class Simulator {
 				strategy3.setSelection(false);
 			}
 		});
-		
+
 		strategy3 = new Button(shell, SWT.CHECK);
 		strategy3.setSelection(true);
 		strategy3.setText("strategy3");
@@ -205,6 +210,16 @@ public class Simulator {
 				strategy3.setSelection(true);
 			}
 		});
+		
+		// ERROR LABEL
+		errorLabel = new Label(shell, SWT.NONE);
+		errorLabel.setForeground(new Color(display, 255, 0, 0));
+		FormData errorLabelFormData = new FormData();
+		errorLabelFormData.width = 280;
+		errorLabelFormData.height = 20;
+		errorLabelFormData.top = new FormAttachment(strategy2, 0);
+		errorLabelFormData.left = new FormAttachment(0, 100);
+		errorLabel.setLayoutData(errorLabelFormData);
 
 		// VIEW
 		canvas = new Canvas(shell, SWT.BORDER);
@@ -229,7 +244,7 @@ public class Simulator {
 				}
 			}
 		});
-
+		
 		// SEPARATOR
 		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL
 				| SWT.LINE_SOLID);
@@ -237,7 +252,7 @@ public class Simulator {
 		separator1FormData.width = 380;
 		separator1FormData.top = new FormAttachment(strategy3, 10);
 		separator.setLayoutData(separator1FormData);
-		
+
 		counterLabel = new Label(shell, SWT.NONE);
 		counterLabel.setText("Nb interaction: ");
 		FormData counterLabelFormData = new FormData();
@@ -260,29 +275,40 @@ public class Simulator {
 		okButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 
-				int strategy = 1;
-				if(strategy2.getSelection()){
-					strategy = 2;
-				} else if(strategy3.getSelection()){
-					strategy = 3;
+				errorLabel.setText("");
+
+				try {
+					// get the parameters
+					int strategy = 1;
+					if(strategy2.getSelection()){
+						strategy = 2;
+					} else if(strategy3.getSelection()){
+						strategy = 3;
+					}
+
+					int in = Integer.parseInt(interactionNumber.getText()); 
+					int sn = Integer.parseInt(serviceNumber.getText());
+					int tn = Integer.parseInt(totalUserNumber.getText()); 
+					int gu = Integer.parseInt(goodUser.getText()); 
+					int bu = Integer.parseInt(badUser.getText()); 
+					int dl = Integer.parseInt(dataLost.getText());
+					
+					if(in == 0 || sn == 0 || tn == 0) {
+						throw new NumberFormatException();
+					} 
+
+					// Create the simulation
+					simulation = new Simulation2(in, sn, tn, gu, bu, dl, strategy);
+
+					// Launch the simulation
+					controller = new Thread(simulation);
+					controller.start();
+
+					// Launch the timer
+					display.timerExec(TIMER_INTERVAL, view);
+				} catch (NumberFormatException ex) {
+					errorLabel.setText("Err: invalid parameter!");
 				}
-				
-				// Create the simulation
-				simulation = new Simulation2(
-						Integer.parseInt(interactionNumber.getText()), 
-						Integer.parseInt(serviceNumber.getText()), 
-						Integer.parseInt(totalUserNumber.getText()), 
-						Integer.parseInt(goodUser.getText()), 
-						Integer.parseInt(badUser.getText()), 
-						Integer.parseInt(dataLost.getText()), 
-						strategy);
-
-				// Launch the simulation
-				controller = new Thread(simulation);
-				controller.start();
-
-				// Launch the timer
-				display.timerExec(TIMER_INTERVAL, view);
 			}
 		});
 		FormData okFormData = new FormData();
@@ -297,6 +323,7 @@ public class Simulator {
 		clearButton.setText("Stop");
 		clearButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				errorLabel.setText("");
 				display.timerExec(-1, view);
 				if(controller != null){
 					controller.stop();
@@ -320,7 +347,7 @@ public class Simulator {
 		updateBackground(BACKGROUND);
 		shell.pack();
 	}
-	
+
 	/**
 	 * 
 	 * @param backgroundImagePath
@@ -330,7 +357,7 @@ public class Simulator {
 				.getResourceAsStream(backgroundImagePath));
 
 		shell.setBackgroundImage(background);
-		
+
 		interactionNumberLabel.setBackgroundImage(background);
 		serviceNumberLabel.setBackgroundImage(background);
 		totalUserNumberLabel.setBackgroundImage(background);
@@ -340,17 +367,19 @@ public class Simulator {
 		separator.setBackgroundImage(background);
 		counterLabel.setBackgroundImage(background);
 		counter.setBackgroundImage(background);
-		
+
 		interactionNumber.setBackgroundImage(background);
 		serviceNumber.setBackgroundImage(background);
 		totalUserNumber.setBackgroundImage(background);
 		goodUser.setBackgroundImage(background);
 		badUser.setBackgroundImage(background);
 		dataLost.setBackgroundImage(background);
-		
+
 		strategy1.setBackgroundImage(background);
 		strategy2.setBackgroundImage(background);
 		strategy3.setBackgroundImage(background);
+		
+		errorLabel.setBackgroundImage(background);
 	}
 
 	/* --------------------------------------------------------- */

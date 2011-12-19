@@ -5,7 +5,6 @@ import java.util.Map;
 
 /**
  * Return A gaussian Curve
- * 
  * @author lvanni
  */
 public class Gaussian {
@@ -35,12 +34,6 @@ public class Gaussian {
 	 * @return y
 	 */
 	public double getY(double x) {
-		/* Thao commented
-		//Laurent's code
-		return Math.pow(
-				Math.exp(-(((x - mean) * (x - mean)) / ((2 * variance)))),
-				1 / (stdDeviation * Math.sqrt(2 * Math.PI))); // Curve Equation
-		*/
 		return (1 / (stdDeviation * Math.sqrt(2 * Math.PI))*
 				Math.exp(-(((x - mean) * (x - mean)) / ((2 * variance))))); // Curve Equation		
 	}
@@ -75,24 +68,3 @@ public class Gaussian {
 		System.out.println("Random value : " + Math.random() * percent.get(d[0]));
 	}
 }
-
-/* An other way to do gaussian curve */
-// int n = 1000;
-// double[] d = new double[n];
-// double sum = 0.0;
-// for(int i=0 ; i<n ; i++){
-// while((d[i] = r.nextGaussian()) < 0){};
-// }
-// Arrays.sort(d);
-//
-// Map<Double, Double> percent = new HashMap<Double, Double>();
-// for(int i=0 ; i<n ; i++){
-// sum += d[i];
-// }
-//
-// for(int i=0 ; i<n ; i++){
-// percent.put(d[i], (100*d[i])/sum);
-// System.out.println("d[" + i + "] = " + d[i] + " = " + percent.get(d[i]) +
-// "%");
-// }
-// System.out.println("\nSomme : " + sum + " = 100%");

@@ -20,6 +20,11 @@ import edu.lognet.reputation.model.user.IRater;
 import edu.lognet.reputation.model.user.ReputedProvider;
 import edu.lognet.reputation.model.user.User;
 
+/**
+ * Represent the engine of the simulator
+ * @author lvanni
+ *
+ */
 public abstract class Simulation {
 
 	/* --------------------------------------------------------- */
