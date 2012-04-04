@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<project name="reputationSimul" default="build_linux">
+  
+  <!-- erase build file -->
+  <target name="clean">
+    <delete dir="bin" />
+    <delete dir="doc/javadoc"/>
+  </target>
+  
+  <!-- classpath linux 64-->
+  <path id="classpath_linux_64">
+    <fileset dir="lib/" includes="swt_x86_64.jar"/>
+    <fileset dir="bin/" includes="*.class" />
+  </path>
+
+  <!-- Compile linux 64 version-->
+  <target name="compile_linux_64">
+    <mkdir dir="bin/"/>
+    <javac srcdir="src" destdir="bin/" classpathref="classpath_linux_64" includeantruntime="false"/>
+  </target>
+
+  <!--  Jar linux 64 creation -->
+  <target name="jar_linux_64" depends="compile_linux_64">
+    <jar destfile="reputationSimul.jar" basedir="bin">
+      <manifest>
+	<attribute name="Main-Class" value="edu.lognet.reputation.view.gui.Simulator"/>
+	<attribute name="Class-Path" value="lib/swt_x86_64.jar" />
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- build all linux 64 -->
+  <target name="build_linux_64" depends="compile_linux_64,jar_linux_64">
+    <echo> build linux version</echo>
+  </target>
+
+  <!-- classpath linux-->
+  <path id="classpath_linux">
+    <fileset dir="lib/" includes="swt.jar"/>
+    <fileset dir="bin/" includes="*.class" />
+  </path>
+
+  <!-- Compile linux version-->
+  <target name="compile_linux">
+    <mkdir dir="bin/"/>
+    <javac srcdir="src" destdir="bin/" classpathref="classpath_linux" includeantruntime="false"/>
+  </target>
+
+  <!--  Jar linux creation -->
+  <target name="jar_linux" depends="compile_linux">
+    <jar destfile="reputationSimul.jar" basedir="bin">
+      <manifest>
+	<attribute name="Main-Class" value="edu.lognet.reputation.view.gui.Simulator"/>
+	<attribute name="Class-Path" value="lib/swt.jar" />
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- build all linux 64 -->
+  <target name="build_linux" depends="compile_linux,jar_linux">
+    <echo> build linux version</echo>
+  </target>
+
+   <!-- classpath mac -->
+  <path id="classpath_mac">
+    <fileset dir="lib/" includes="macosx.swt.jar"/>
+    <fileset dir="bin/" includes="*.class" />
+  </path>
+
+  <!-- Compile mac version-->
+  <target name="compile_mac">
+    <mkdir dir="bin/"/>
+    <javac srcdir="src" destdir="bin/" classpathref="classpath_mac" includeantruntime="false"/>
+  </target>
+
+  <!--  Jar mac creation -->
+  <target name="jar_mac" depends="compile_mac">
+    <jar destfile="reputationSimul.jar" basedir="bin">
+      <manifest>
+	<attribute name="Main-Class" value="edu.lognet.reputation.view.gui.Simulator"/>
+	<attribute name="Class-Path" value="lib/macosx.swt.jar" />
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- build all mac -->
+  <target name="build_mac" depends="compile_mac,jar_mac">
+    <echo> build mac os X version</echo>
+  </target>
+
+  <!-- classpath windows -->
+  <path id="classpath_windows">
+    <fileset dir="lib/" includes="org.eclipse.swt.win32.win32.x86_3.3.0.v3346.jar"/>
+    <fileset dir="bin/" includes="*.class" />
+  </path>
+  
+  <!-- Compile windows version-->
+  <target name="compile_windows">
+    <mkdir dir="bin/"/>
+    <javac srcdir="src" destdir="bin/" classpathref="classpath_windows" includeantruntime="false"/>
+  </target>
+
+  <!--  Jar mac creation -->
+  <target name="jar_windows" depends="compile_windows">
+    <jar destfile="reputationSimul.jar" basedir="bin">
+      <manifest>
+	<attribute name="Main-Class" value="edu.lognet.reputation.view.gui.Simulator"/>
+	<attribute name="Class-Path" value="lib/org.eclipse.swt.win32.win32.x86_3.3.0.v3346.jar" />
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- build all windows -->
+  <target name="build_windows" depends="compile_windows,jar_windows">
+    <echo> build windows version</echo>
+  </target>
+
+  <!-- generate documentation -->
+   <target name="javadoc" depends="">
+		<mkdir dir="doc/javadoc" />
+        	<javadoc packagenames="*.*" sourcepath="src" destdir="doc/javadoc" access="private" windowtitle="Reputation Simulation" verbose="true" author="true" version="true">
+          	</javadoc>
+     	</target>
+
+</project>
