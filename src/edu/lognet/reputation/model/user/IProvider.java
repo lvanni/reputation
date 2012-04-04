@@ -1,6 +1,7 @@
 package edu.lognet.reputation.model.user;
 
 import edu.lognet.reputation.model.service.Service;
+import edu.lognet.reputation.model.user.IRater.raterType;
 import edu.lognet.reputation.model.user.User.collusionGroup;
 import edu.lognet.reputation.model.user.User.victimGroup;
 
@@ -102,4 +103,6 @@ public interface IProvider {
 	 * @return
 	 */
 	public providerType getProviderType();
+
+	public raterType getRaterType();
 }

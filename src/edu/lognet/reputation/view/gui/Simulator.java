@@ -7,6 +7,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -17,7 +18,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
+import edu.lognet.reputation.controller.simulations.simulation2.*;
+import edu.lognet.reputation.controller.simulations.simulationcolluding.*;
 import edu.lognet.reputation.controller.simulations.simulation2.Simulation2;
 
 /**
@@ -37,9 +39,9 @@ public class Simulator {
 	private final Shell shell;
 	private Display display;
 
-	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel, counter, errorLabel;
-	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost;
-	private final Button strategy1, strategy2, strategy3;
+	private final Label interactionNumberLabel, serviceNumberLabel, totalUserNumberLabel, goodUserLabel, badUserLabel, dataLostLabel, separator, counterLabel, counter, errorLabel,colludingNumberLabel,colludingNumInteractLabel;
+	private Text interactionNumber, serviceNumber, totalUserNumber, goodUser, badUser, dataLost,colludingNumber,colludingNumInteract;
+	private final Button strategy1, strategy2, strategy3, colluding,machine,milking;
 
 	private Canvas canvas;
 
@@ -208,6 +210,115 @@ public class Simulator {
 				strategy3.setSelection(true);
 			}
 		});
+
+		machine = new Button(shell,SWT.CHECK);
+		machine.setText("machine simulation");
+		machine.setSelection(false);
+		FormData machineFormData = new FormData();
+		machineFormData.top = new FormAttachment(strategy3,0);
+		machineFormData.left = new FormAttachment(0,0);
+		machine.setLayoutData(machineFormData);
+		machine.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e) {
+				if(machine.getSelection()){
+					machine.setSelection(true);
+					colluding.setSelection(false);
+					milking.setSelection(false);
+					colludingNumber.setEnabled(false);
+					colludingNumInteract.setEnabled(false);
+					
+				}
+				else{
+					machine.setSelection(false);
+				}
+			}
+		});
+
+		colluding = new Button(shell,SWT.CHECK);
+		colluding.setText("colluding attack");
+		colluding.setSelection(false);
+		FormData colludingFormData = new FormData();
+		colludingFormData.top = new FormAttachment(machine, 0);
+		colludingFormData.left = new FormAttachment(0, 0);
+		colluding.setLayoutData(colludingFormData);
+		colluding.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e) {
+				if(colluding.getSelection()){
+					colluding.setSelection(true);
+					colludingNumber.setEnabled(true);
+					colludingNumInteract.setEnabled(true);
+					machine.setSelection(false);
+					milking.setSelection(false);
+				}
+				else{
+					colluding.setSelection(false);
+					colludingNumber.setEnabled(false);
+					colludingNumInteract.setEnabled(false);
+				}
+			}
+		});
+		
+		milking = new Button(shell,SWT.CHECK);
+		milking.setText("milking attack");
+		milking.setSelection(false);
+		FormData milkingFormData = new FormData();
+		milkingFormData.top = new FormAttachment(colluding,0);
+		milkingFormData.left = new FormAttachment(0,0);
+		milking.setLayoutData(milkingFormData);
+		milking.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if(milking.getSelection()){
+					milking.setSelection(true);
+					colludingNumber.setEnabled(true);
+					machine.setSelection(false);
+					colluding.setSelection(false);
+					colludingNumInteract.setEnabled(true);
+				}
+				else{
+					milking.setSelection(false);
+					colludingNumber.setEnabled(false);
+				}
+				
+			}
+		});
+		
+
+		//COLLUDING CONFIG
+		colludingNumberLabel =  new Label(shell,SWT.NONE);
+		colludingNumberLabel.setText("coll/milk group width :");
+		FormData colFormData = new FormData();
+		colFormData.top = new FormAttachment(milking,0);
+		colFormData.left = new FormAttachment(0,0);
+		colludingNumberLabel.setLayoutData(colFormData);
+
+		colludingNumber = new Text(shell,SWT.BORDER);
+		colludingNumber.setText("50");
+		FormData colNFormData = new FormData();
+		colNFormData.width= 160;
+		colNFormData.height =15;
+		colNFormData.top = new FormAttachment(milking,0);
+		colNFormData.left= new FormAttachment(0,150);
+		colludingNumber.setLayoutData(colNFormData);
+		colludingNumber.setEnabled(false);
+
+		colludingNumInteractLabel = new Label(shell,SWT.NONE);
+		colludingNumInteractLabel.setText("colluding injection %:");
+		FormData col2FormData = new FormData();
+		col2FormData.top = new FormAttachment(colludingNumber);
+		col2FormData.left = new FormAttachment(0,0);
+		colludingNumInteractLabel.setLayoutData(col2FormData);
+
+		colludingNumInteract = new Text(shell,SWT.BORDER);
+		colludingNumInteract.setText("50");
+		FormData colNIFormData = new FormData();
+		colNIFormData.width= 160;
+		colNIFormData.height =15;
+		colNIFormData.top = new FormAttachment(colludingNumber,0);
+		colNIFormData.left= new FormAttachment(0,150);
+		colludingNumInteract.setLayoutData(colNIFormData);
+		colludingNumInteract.setEnabled(false);
 		
 		// ERROR LABEL
 		errorLabel = new Label(shell, SWT.NONE);
@@ -215,7 +326,7 @@ public class Simulator {
 		FormData errorLabelFormData = new FormData();
 		errorLabelFormData.width = 280;
 		errorLabelFormData.height = 20;
-		errorLabelFormData.top = new FormAttachment(strategy2, 0);
+		errorLabelFormData.top = new FormAttachment(colludingNumInteract, 0);
 		errorLabelFormData.left = new FormAttachment(0, 100);
 		errorLabel.setLayoutData(errorLabelFormData);
 
@@ -248,7 +359,7 @@ public class Simulator {
 				| SWT.LINE_SOLID);
 		FormData separator1FormData = new FormData();
 		separator1FormData.width = 380;
-		separator1FormData.top = new FormAttachment(strategy3, 10);
+		separator1FormData.top = new FormAttachment(colludingNumInteract, 10);
 		separator.setLayoutData(separator1FormData);
 
 		counterLabel = new Label(shell, SWT.NONE);
@@ -290,14 +401,33 @@ public class Simulator {
 					int gu = Integer.parseInt(goodUser.getText()); 
 					int bu = Integer.parseInt(badUser.getText()); 
 					int dl = Integer.parseInt(dataLost.getText());
-					
+
 					if(in == 0 || sn == 0 || tn == 0) {
 						throw new NumberFormatException();
 					} 
 
 					// Create the simulation
-					simulation = new Simulation2(in, sn, tn, gu, bu, dl, strategy);
-
+					if(colluding.getSelection()){
+						System.out.println("colluding attack");
+						int cn = Integer.parseInt(colludingNumber.getText());
+						int cni = Integer.parseInt(colludingNumInteract.getText());
+						simulation = new SimulationColluding(in, sn, tn, gu, bu, dl, strategy,cn,cni);
+					}
+					else{
+						if(machine.getSelection()){
+							simulation = new SimulationMachine(in,sn,tn,gu,bu,dl,strategy);
+						}
+						if(milking.getSelection()){
+							System.out.println("milking repuation");
+							int mn = Integer.parseInt(colludingNumber.getText());
+							int mni = Integer.parseInt(colludingNumInteract.getText());
+							simulation = new SimulationMilking(in,sn,tn,gu,bu,dl,strategy,mn,mni);
+						}
+						else{
+							simulation = new Simulation2(in, sn, tn, gu, bu, dl, strategy);
+						}
+						
+					}
 					// Launch the simulation
 					controller = new Thread(simulation);
 					controller.start();

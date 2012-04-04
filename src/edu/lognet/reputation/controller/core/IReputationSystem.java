@@ -27,7 +27,7 @@ public interface IReputationSystem {
 	 */
 	public double getReputation(Service service, IProvider provider,
 			List<IRater> raters, IConsumer consumer,
-			Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap);
+			Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap, int personalWeight);
 
 	/**
 	 * 

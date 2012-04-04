@@ -55,25 +55,25 @@ public class Service {
 		raters.put(provider, new ArrayList<IRater>());
 		//For checking population
 		double temp = provider.getInitQoS();
-		if (temp < 0.1) {
+		if (temp <= 0.1) {
 			numUserInitQoS[0]++;
-		} else if (temp < 0.2) {
+		} else if (temp <= 0.2) {
 			numUserInitQoS[1]++;
-		} else if (temp < 0.3) {
+		} else if (temp <= 0.3) {
 			numUserInitQoS[2]++;
-		} else if (temp < 0.4) {
+		} else if (temp <= 0.4) {
 			numUserInitQoS[3]++;
-		} else if (temp < 0.5) {
+		} else if (temp <= 0.5) {
 			numUserInitQoS[4]++;
-		} else if (temp < 0.6) {
+		} else if (temp <= 0.6) {
 			numUserInitQoS[5]++;
-		} else if (temp < 0.7) {
+		} else if (temp <= 0.7) {
 			numUserInitQoS[6]++;
-		} else if (temp < 0.8) {
+		} else if (temp <= 0.8) {
 			numUserInitQoS[7]++;
-		} else if (temp < 0.9) {
+		} else if (temp <= 0.9) {
 			numUserInitQoS[8]++;
-		} else if (temp < 1) {
+		} else if (temp <= 1) {
 			numUserInitQoS[9]++;
 		}	 
 		providerType pType = provider.getProviderType();

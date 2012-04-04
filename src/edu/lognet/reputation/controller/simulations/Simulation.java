@@ -35,26 +35,28 @@ public abstract class Simulation {
 	protected IReputationSystem reputationSystem;
 
 	private int interactionNumber;
-	private int serviceNumber;
-	private int userNumber;
+	protected int serviceNumber;
+	protected int userNumber;
 
-	private int goodUser; /* in %, feedback >= 0.75 */
-	private int badUser;  /* in %, 0<feedback <= 0.25 */
-	private int goodTurnBadUser;
-	private int fluctuateUser;
-	private int frequencyOfFluctuation;
-	private int badTurnGoodUser;
-	private int normalUser;
+	protected int goodUser; /* in %, feedback >= 0.75 */
+	protected int badUser;  /* in %, 0<feedback <= 0.25 */
+	protected int goodTurnBadUser;
+	protected int fluctuateUser;
+	protected int frequencyOfFluctuation;
+	protected int badTurnGoodUser;
+	protected int normalUser;
 
-	private int honestRater;
-	private int dishonestRater;
-	private int randomRater;
-	private int collusiveRater;
-	private int collusiveGroupNum;
+	protected int honestRater;
+	protected int dishonestRater;
+	protected int randomRater;
+	protected int collusiveRater;
+	protected int collusiveGroupNum;
 
-	private int resourceAvailable;
+	protected int resourceAvailable;
 	private int dataLostPercent;
+	private int personalWeight;
 	private int chosenStrategy;
+	private int maxProvListSize;
 
 	protected List<Service> services = getServiceSet();
 	protected List<User> users = getUserSet(services);
@@ -62,14 +64,14 @@ public abstract class Simulation {
 	private static double observanceTolDefault = 0.01;
 
 	/* --------------------------------------------------------- */
-	/* Constructors */
+	/* Constructors */ 
 	/* --------------------------------------------------------- */
 	public Simulation(int interactionNumber2, int serviceNumber2,
 			int totalUserNumber, int goodUser2, int goodTurnBadUser,
 			int fluctuateUser, int frequencyOfFluctuation, int badUser2,
 			int badTurnGoodUser, int honestRater, int dishonestRater,
 			int randomRater, int collusiveGroupNum, int resourceAvailable,
-			int dataLost, int chosenStrategy2) {
+			int dataLost, int personalWeight, int choosingStrategy, int maxProvListSize) {
 		
 		// CREATE YOUR REPUTATION ALGORITHM BY IMPLEMENTING: edu.lognet.reputation.controller.core.IReputationSystem
 		this.reputationSystem = new DefaultReputationSystem();
@@ -95,7 +97,9 @@ public abstract class Simulation {
 
 		this.resourceAvailable = resourceAvailable * interactionNumber2 / 100;
 		this.dataLostPercent = dataLost;
-		this.chosenStrategy = chosenStrategy2;
+		this.personalWeight = personalWeight;
+		this.chosenStrategy = choosingStrategy;
+		this.maxProvListSize = maxProvListSize;
 	}
 
 	/* --------------------------------------------------------- */
@@ -164,10 +168,10 @@ public abstract class Simulation {
 			 */
 
 			int rand = randomGenerator.nextInt(100);
-			// create goodUser, QoS>=70%
+			// create goodUser, QoS>70%
 			if ((((100 * good) / userNumber) < goodUser)
 					&& (rand < (goodUser + normalUser / 5))) {
-				QoS = (randomGenerator.nextInt(30) + 70.0) / 100;
+				QoS = (randomGenerator.nextInt(30) + 71.0) / 100;
 				good++;
 				pType = User.providerType.GOOD;
 			}
@@ -175,7 +179,7 @@ public abstract class Simulation {
 			else if ((((100 * goodTB) / userNumber) < goodTurnBadUser)
 					&& (rand >= (goodUser + normalUser / 5))
 					&& (rand < (goodUser + goodTurnBadUser + 2 * normalUser / 5))) {
-				QoS = (randomGenerator.nextInt(30) + 70.0) / 100;
+				QoS = (randomGenerator.nextInt(30) + 71.0) / 100;
 				goodTB++;
 				pType = User.providerType.GOODTURNSBAD;
 			}
@@ -185,19 +189,20 @@ public abstract class Simulation {
 					&& (rand >= (goodUser + goodTurnBadUser + 2 * normalUser / 5))
 					&& (rand < (goodUser + goodTurnBadUser + fluctuateUser + 3 * normalUser / 5))) {
 				if (randomGenerator.nextBoolean()) {
-					QoS = (randomGenerator.nextInt(30) + 70.0) / 100;
+					QoS = (randomGenerator.nextInt(30) + 71.0) / 100;
 				} else {
-					QoS = (randomGenerator.nextInt(30) + 1.0) / 100;
+					QoS = (randomGenerator.nextInt(40) + 1.0) / 100;
 				}
 				fluctuate++;
 				pType = User.providerType.FLUCTUATE;
 			}
-			// Bad users
+
+			// Bad users, QoS<=0.4
 			else if ((((100 * bad) / userNumber) < badUser)
 					&& (rand >= (goodUser + goodTurnBadUser + fluctuateUser + 3 * normalUser / 5))
 					&& (rand < (goodUser + goodTurnBadUser + fluctuateUser
 							+ badUser + 4 * normalUser / 5))) {
-				QoS = (randomGenerator.nextInt(30) + 1.0) / 100;
+				QoS = (randomGenerator.nextInt(40) + 1.0) / 100;
 				bad++;
 				pType = User.providerType.BAD;
 			}
@@ -207,14 +212,15 @@ public abstract class Simulation {
 							+ badUser + 4 * normalUser / 5))
 					&& (rand < (goodUser + goodTurnBadUser + fluctuateUser
 							+ badUser + badTurnGoodUser + normalUser))) {
-				QoS = (randomGenerator.nextInt(30) + 1.0) / 100;
+				QoS = (randomGenerator.nextInt(40) + 1.0) / 100;
 				badTG++;
 				pType = User.providerType.BADTURNSGOOD;
 			}
 			// normal, size can be bigger than it's supposed to be and then some
 			// other group is fewer than it's supposed to be.
 			else {
-				QoS = (randomGenerator.nextInt(40) + 30.0) / 100;
+
+				QoS = (randomGenerator.nextInt(30) + 41.0) / 100;
 				pType = User.providerType.NORMAL;
 			}
 
@@ -298,7 +304,7 @@ public abstract class Simulation {
 					new HashMap<IRater, Credibility>());
 
 			double reputation = reputationSystem.getReputation(service, provider,
-					raters, consumer, credibilityOfRaterMap);
+					raters, consumer, credibilityOfRaterMap, personalWeight);
 
 			reputedProviderList.add(new ReputedProvider(provider, reputation));
 		}
@@ -330,7 +336,7 @@ public abstract class Simulation {
 						Math.round(perEval * 100 - consumer.getRatingTol()
 								* 100)
 								/ (double) 100);
-			} else if (perEval < 0.4) {// BAD provider
+			} else if (perEval <= 0.4) {// BAD provider
 				rating = Math.min(
 						(double) 1,
 						Math.round(perEval * 100 + consumer.getRatingTol()
@@ -553,4 +559,11 @@ public abstract class Simulation {
 		return chosenStrategy;
 	}
 
+	public int getPersonalWeight() {
+		return personalWeight;
+	}
+
+	public int getMaxProvListSize() {
+		return maxProvListSize;
+	}
 }

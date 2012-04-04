@@ -37,12 +37,12 @@ public class Simulation1 extends Simulation {
 			int fluctuateUser, int frequencyOfFluctuation, int badUser,
 			int badTurnGoodUser, int honestRater, int dishonestRater,
 			int randomRater, int collusiveGroups, int resourceAvailable,
-			int dataLost, int choosingStrategy) {
+			int dataLost, int personalWeight, int choosingStrategy, int maxProvListSize) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,
 				goodTurnBadUser, fluctuateUser, frequencyOfFluctuation,
 				badUser, badTurnGoodUser, honestRater, dishonestRater,
 				randomRater, collusiveGroups, resourceAvailable, dataLost,
-				choosingStrategy);
+				personalWeight, choosingStrategy, maxProvListSize);
 	}
 
 	/* --------------------------------------------------------- */
@@ -98,6 +98,26 @@ public class Simulation1 extends Simulation {
 			return null;
 		}
 		
+		// Restrict providerList's size to a limit of maxProviderList%
+		int maxProviderList = getMaxProvListSize()*providers.size()/100;
+		if (providers.size() > maxProviderList) {
+			int firstIndex = randomGenerator.nextInt(providers.size());
+			if ((firstIndex + maxProviderList) <= (providers.size() - 1)) {
+				for (int j = 0; j < providers.size() - 1 - firstIndex
+						- maxProviderList; j++) {
+					providers.remove(firstIndex + maxProviderList + 1);// remove all elements after (firstIndex+maxProviderList)
+				}
+				for (int j = 0; j < firstIndex; j++) {
+					providers.remove(0);// remove all elements before firstIndex
+				}
+			} else {
+				for (int j = 0; j < (providers.size() - maxProviderList); j++) {
+					providers.remove(firstIndex + maxProviderList
+							- providers.size());
+				}
+			}
+		}
+
 		// THE CONSUMER CHOOSE A PROVIDER (according to the strategy choosen)
 		Map<IRater, Credibility> credibilityOfRatersForChosenProvider = new HashMap<IRater, Credibility>();
 		Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap = new HashMap<IProvider, Map<IRater, Credibility>>();
@@ -204,15 +224,17 @@ public class Simulation1 extends Simulation {
 		out.write("ResourceAvail \t" + getResourceAvailable() + "\n");
 		out.write("FrequencyOfFluctuation \t" + getFrequencyOfFluctuation()
 				+ "\n");
-		out.write("Honest% \t Dishonest% \t Random% \t Collusive% \t Collusion% \t CollusionGroupNum \n");
+		out.write("Honest% \t Dishonest% \t Random% \t Collusive% \t CollusionGroupNum \n");
 		out.write(getHonestRater() + "\t" + getDishonestRater() + "\t"
 				+ getRandomRater() + "\t" + getCollusiveRater() + "\t"
 				+ getCollusiveGroupNum() + "\n");
 		out.write("Order of creating providers: \t random with probs \n");
-		out.write("\t G \t GTB \t F \t B \t BTG \t when 1 of them enough \t -> Normal \n");
+		out.write("\t G(QoS>70%) \t GTB(init=G) \t F(init=G/B) \t B(QoS<=40) \t BTG(init=B) \t when 1 of them enough \t -> Normal(40<QoS<=70) \n");
 		out.write("Order of creating raters: \t \t Honest \t Dishonest \t Random \t Collusive \t (C1->C2->C3) \n");
 		out.write("Service [0,NumSer-1] \t randomly assigned to user \n");
+		out.write("Personal weight:\t" + getPersonalWeight() + "\n");
 		out.write("Strategy chosen:\t " + getChosenStrategy() + "\n");
+		out.write("maxProvListSize (%): \t" + getMaxProvListSize() + "\n");
 		out.write("DataLost% (Input) \t" + getDataLostPercent() + "\n");
 
 		// Process ServiceList & InteractionList to get data for graph
@@ -227,8 +249,8 @@ public class Simulation1 extends Simulation {
 		int[] numConsuming = new int[providerType.values().length];
 		double[] aveDiffAsConsumer = new double[providerType.values().length];
 		double[] sumDiffAsConsumer = new double[providerType.values().length];
-		int[] numSatisfiedOverConsumer = new int[providerType.values().length];
-		int[] numUnSatisfiedOverConsumer = new int[providerType.values().length];
+		int[] numSatisfiedAsConsumer = new int[providerType.values().length];
+		int[] numUnSatisfiedAsConsumer = new int[providerType.values().length];
 		int[] percentProvision = new int[providerType.values().length];
 		List<User> providerNeverChosen = new ArrayList<User>();
 		int[] numProviderNeverChosen = new int[providerType.values().length];
@@ -246,8 +268,8 @@ public class Simulation1 extends Simulation {
 			numConsuming[pType.ordinal()] = 0;
 			aveDiffAsConsumer[pType.ordinal()] = 0;
 			sumDiffAsConsumer[pType.ordinal()] = 0;
-			numSatisfiedOverConsumer[pType.ordinal()] = 0;
-			numUnSatisfiedOverConsumer[pType.ordinal()] = 0;
+			numSatisfiedAsConsumer[pType.ordinal()] = 0;
+			numUnSatisfiedAsConsumer[pType.ordinal()] = 0;
 			numProviderNeverChosen[pType.ordinal()] = 0;
 		}
 		for (User user : users) {
@@ -287,8 +309,38 @@ public class Simulation1 extends Simulation {
 			numAsRater[rType.ordinal()] = 0;
 			sumCredOverRTypeAndTrnx[rType.ordinal()] = 0;
 		}
+
+		int[][] colGNumUser=new int[getCollusiveGroupNum()][providerType.values().length];
+		for (int i=0;i<getCollusiveGroupNum();i++) {
+			for (providerType pType : providerType.values()) {
+				colGNumUser[i][pType.ordinal()]=0;
+			}
+		}
 		for (User user : users) {
 			numRaterType[user.getRaterType().ordinal()]++;
+			if (user.getRaterType()==raterType.COLLUSIVE) {
+				int i = user.getCollusionCode().ordinal();
+				int j = user.getProviderType().ordinal();
+				colGNumUser[i][j]++;	
+			}			
+		}
+
+		//Table 6: Collusive Users
+		int[][] colGProv1=new int[getCollusiveGroupNum()][providerType.values().length];
+		int[][] colGProv2=new int[getCollusiveGroupNum()][providerType.values().length];
+		double[][] colAveDiffAsProviderSeenByConsumers=new double[getCollusiveGroupNum()][providerType.values().length];
+		double[][] colSumDiffAsProvider=new double[getCollusiveGroupNum()][providerType.values().length];
+		int[][] colNumSatisfiedAsConsumer=new int[getCollusiveGroupNum()][providerType.values().length];
+		int[][] colNumUnsatisfiedAsConsumer=new int[getCollusiveGroupNum()][providerType.values().length];
+		for (int i=0;i<getCollusiveGroupNum();i++) {
+			for (providerType pType : providerType.values()) {
+				colGProv1[i][pType.ordinal()] = 0;
+				colGProv2[i][pType.ordinal()] = 0;
+				colAveDiffAsProviderSeenByConsumers[i][pType.ordinal()] = 0;
+				colSumDiffAsProvider[i][pType.ordinal()] = 0;
+				colNumSatisfiedAsConsumer[i][pType.ordinal()] = 0;
+				colNumUnsatisfiedAsConsumer[i][pType.ordinal()] = 0;
+			}				
 		}
 
 		double temp, sumDataLost = 0;
@@ -314,6 +366,17 @@ public class Simulation1 extends Simulation {
 						.ordinal()]
 						+ Math.abs(interaction.getPerEval()
 								- interaction.getEstimatedScore());
+				if (interaction.getProvider().getRaterType()==raterType.COLLUSIVE) {
+					int i=interaction.getProvider().getCollusionCode().ordinal();
+					int j=interaction.getProvider().getProviderType().ordinal();
+					colGProv1[i][j]++;	
+					colSumDiffAsProvider[i][j] = colSumDiffAsProvider[i][j]+Math.abs(interaction.getPerEval()
+							- interaction.getEstimatedScore());
+					if (interaction.getPerEval() > 0.7) {
+						colNumSatisfiedAsConsumer[i][j]++;
+					} else if (interaction.getPerEval()<=0.5) 
+						colNumUnsatisfiedAsConsumer[i][j]++;
+				}				
 			} else { // second half
 				pTypeTemp = interaction.getProvider().getProviderType();
 				numChosenAsProvider2[pTypeTemp.ordinal()]++;
@@ -321,6 +384,17 @@ public class Simulation1 extends Simulation {
 						.ordinal()]
 						+ Math.abs(interaction.getPerEval()
 								- interaction.getEstimatedScore());
+				if (interaction.getProvider().getRaterType()==raterType.COLLUSIVE) {
+					int i=interaction.getProvider().getCollusionCode().ordinal();
+					int j=interaction.getProvider().getProviderType().ordinal();
+					colGProv2[i][j]++;
+					colSumDiffAsProvider[i][j] = colSumDiffAsProvider[i][j]+Math.abs(interaction.getPerEval()
+							- interaction.getEstimatedScore());
+					if (interaction.getPerEval() > 0.7) {
+						colNumSatisfiedAsConsumer[i][j]++;
+					} else if (interaction.getPerEval()<=0.5) 
+						colNumUnsatisfiedAsConsumer[i][j]++;		
+				}				
 			}
 			// for numConsuming & AverageDiffAsConsumer & percentSatisfied
 			pTypeTemp = ((IProvider) interaction.getConsumer())
@@ -332,10 +406,11 @@ public class Simulation1 extends Simulation {
 					.ordinal()]
 					+ Math.abs(interaction.getPerEval()
 							- interaction.getEstimatedScore());
-			if (interaction.getPerEval() > 0.5) {
-				numSatisfiedOverConsumer[pTypeTemp.ordinal()]++;
-			} else
-				numUnSatisfiedOverConsumer[pTypeTemp.ordinal()]++;
+			if (interaction.getPerEval() > 0.7) {
+				numSatisfiedAsConsumer[pTypeTemp.ordinal()]++;
+			} else if (interaction.getPerEval()<=0.5)
+				numUnSatisfiedAsConsumer[pTypeTemp.ordinal()]++;	
+
 			// for provider never chosen
 			providerNeverChosen.remove(interaction.getProvider());
 			// for averageCred
@@ -380,13 +455,21 @@ public class Simulation1 extends Simulation {
 			if (numConsuming[pType.ordinal()] != 0) {
 				aveDiffAsConsumer[pType.ordinal()] = sumDiffAsConsumer[pType
 						.ordinal()] * 100 / numConsuming[pType.ordinal()];
-				percentSatisfied[pType.ordinal()] = numSatisfiedOverConsumer[pType
+
+				percentSatisfied[pType.ordinal()] = numSatisfiedAsConsumer[pType
 						.ordinal()]
 						* 100
-						/ (numSatisfiedOverConsumer[pType.ordinal()] + numUnSatisfiedOverConsumer[pType
-								.ordinal()]);
-				percentUnsatisfied[pType.ordinal()] = 100 - percentSatisfied[pType
-						.ordinal()];
+						/ numConsuming[pType.ordinal()];
+				percentUnsatisfied[pType.ordinal()] = numUnSatisfiedAsConsumer[pType.ordinal()]*100/numConsuming[pType.ordinal()];
+			}			
+		}
+		if (getCollusiveRater()!=0) {
+			for (int i=0;i<getCollusiveGroupNum();i++) {
+				for (int j=0;j<providerType.values().length;j++) {
+					if (colSumDiffAsProvider[i][j]!=0) {
+						colAveDiffAsProviderSeenByConsumers[i][j] = colSumDiffAsProvider[i][j]*100/(colGProv1[i][j]+colGProv2[i][j]);				
+					}
+				}
 			}
 		}
 		// for provider never chosen
@@ -518,7 +601,19 @@ public class Simulation1 extends Simulation {
 			}
 			out.write("\n");
 		}
-
+		
+		//Table 6: Collusive Users
+		if (getCollusiveGroupNum()>0) {
+			out.write("Table 6 \t Collusive Users \n");
+			out.write("\t Collusion Group \t providerType \t NumUserColG Details \t NumGProv1 in 50% first interactions \t NumGProv2 in 50% second interactions \t AverageDiffAsProviderSeenByConsumers \t NumSatisfied \t NumUnsatisfied");
+			for (int i = 0; i < getCollusiveGroupNum(); i++) {
+				out.write("\n\t Group " + (i + 1) + "\t" + providerType.values()[0].toString() + "\t" +colGNumUser[i][0]+"\t"+colGProv1[i][0]+"\t"+colGProv2[i][0]+"\t"+colAveDiffAsProviderSeenByConsumers[i][0]+"\t"+colNumSatisfiedAsConsumer[i][0]+"\t"+colNumUnsatisfiedAsConsumer[i][0]);
+				for (int j=1;j<providerType.values().length;j++) {
+					out.write("\n\t\t" + providerType.values()[j].toString() + "\t" +colGNumUser[i][j]+"\t"+colGProv1[i][j]+"\t"+colGProv2[i][j]+"\t"+colAveDiffAsProviderSeenByConsumers[i][j]+"\t"+colNumSatisfiedAsConsumer[i][j]+"\t"+colNumUnsatisfiedAsConsumer[i][j]);
+				}
+			}	
+		}
+		
 		out.close();
 
 		// PRINT ALL THE INTERACTION
@@ -538,8 +633,7 @@ public class Simulation1 extends Simulation {
 	 */
 	public void start() throws IOException {
 		// SETUP
-		setup();
-
+		/*setup();
 		// COMPUTE
 		List<Interaction> interactions = new ArrayList<Interaction>();
 		for (int i = 0; i < getInteractionNumber(); i++) {
@@ -551,7 +645,7 @@ public class Simulation1 extends Simulation {
 		}
 
 		// PRINT RESULT
-		extractData(interactions);
+		extractData(interactions);*/
 	}
 
 }

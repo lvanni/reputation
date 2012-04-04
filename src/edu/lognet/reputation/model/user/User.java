@@ -392,10 +392,17 @@ public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 	public providerType getProviderType() {
 		return myProviderType;
 	}
+	
+	public void setProviderType(providerType type){
+		myProviderType = type;
+	}
 
 	@Override
 	public raterType getRaterType() {
 		return myRaterType;
 	}
-
+	
+	public void setRaterType(raterType type){
+		myRaterType = type;
+	}
 }

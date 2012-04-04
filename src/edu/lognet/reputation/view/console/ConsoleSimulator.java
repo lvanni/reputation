@@ -64,8 +64,10 @@ public class ConsoleSimulator {
 						if ((goodUser+goodTurnBadUser)<100) {
 							System.out.print("Fluctuate Provider Percent : ");
 							fluctuateUser = Integer.parseInt(in.readLine());
-							System.out.print("Frequency of Fluctuate Provider (% of resourceAvailable): ");
-							frequencyOfFluctuation = Integer.parseInt(in.readLine());
+							if (fluctuateUser!=0) {
+								System.out.print("Frequency of Fluctuate Provider (% of resourceAvailable): ");
+								frequencyOfFluctuation = Integer.parseInt(in.readLine());
+							}
 							if ((goodUser+goodTurnBadUser+fluctuateUser)<100) {
 								System.out.print("Bad Provider Percent : ");
 								badUser = Integer.parseInt(in.readLine());
@@ -100,13 +102,17 @@ public class ConsoleSimulator {
 					
 					System.out.print("Data Lost Percent : ");
 					int dataLost = Integer.parseInt(in.readLine());					
+					System.out.print("Personal weight (default=1) : ");
+					int personalWeight = Integer.parseInt(in.readLine());	
+					System.out.print("maximum size of the considered provider list (in %): ");
+					int maxProvListSize = Integer.parseInt(in.readLine());
 					System.out.print("Choosing strategy : ");
 					System.out.print("\n\t1) choosing provider with highest score");
 					System.out.print("\n\t2) cropping provider list before choosing randomly on weighted Statistic Factor");
 					System.out.print("\n\t3) choosing randomly on weighted Statistic Factor");
 					System.out.print("\n------> ");
 					int choosingStrategy = Integer.parseInt(in.readLine());
-					experiment = new Simulation1(interactionNumber, serviceNumber, totalUserNumber, goodUser, goodTurnBadUser, fluctuateUser, frequencyOfFluctuation, badUser, badTurnGoodUser, honestRater, dishonestRater, randomRater, collusiveGroupNum, resourceAvailable, dataLost, choosingStrategy);
+					experiment = new Simulation1(interactionNumber, serviceNumber, totalUserNumber, goodUser, goodTurnBadUser, fluctuateUser, frequencyOfFluctuation, badUser, badTurnGoodUser, honestRater, dishonestRater, randomRater, collusiveGroupNum, resourceAvailable, dataLost, personalWeight, choosingStrategy, maxProvListSize);
 					System.out.println("INFO: Experiment Created! Ready to start...");
 					break;
 				case 2 : 

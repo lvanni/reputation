@@ -33,7 +33,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	public Simulation2(int interactionNumber, int serviceNumber,
 			int totalUserNumber, int goodUser, int badUser, int dataLostPercent, int choosingStrategy) {
 		super(interactionNumber, serviceNumber, totalUserNumber, goodUser,0,0,0,
-				badUser, 0, 100, 0, 0, 0, 100, dataLostPercent, choosingStrategy);
+				badUser, 0, 100, 0, 0, 0, 100, dataLostPercent, 1, choosingStrategy, 100);
 		userGUI = new HashMap<String, UserGUI>();
 	}
 
@@ -60,7 +60,7 @@ public class Simulation2 extends Simulation1 implements Runnable {
 	 * 
 	 * @param interaction
 	 */
-	private void movePeer(Interaction interaction){
+	protected void movePeer(Interaction interaction){
 		Map<String, UserGUI> userGUI = getUserGUIList();
 		UserGUI provider = userGUI.get(((User)interaction.getProvider()).getId());
 		UserGUI consumer = userGUI.get(((User)interaction.getConsumer()).getId());

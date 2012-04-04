@@ -36,7 +36,7 @@ public class DefaultReputationSystem implements IReputationSystem {
 	@Override
 	public double getReputation(Service service, IProvider provider,
 			List<IRater> raters, IConsumer consumer,
-			Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap) {
+			Map<IProvider, Map<IRater, Credibility>> credibilityOfRaterMap, int personalWeight) {
 		
 		Map<IProvider, Double> serviceRep = reputation.get(service);
 		if(serviceRep == null){
