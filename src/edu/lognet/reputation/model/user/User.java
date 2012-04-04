@@ -14,8 +14,8 @@ import edu.lognet.reputation.model.service.Service;
 /**
  * Represent an user in the System
  * The User can be a Provider, a Consumer or a Rater
+ * 
  * @author Laurent Vanni, Thao Nguyen
- *
  */
 public class User extends AbstractUser implements IProvider, IConsumer, IRater {
 

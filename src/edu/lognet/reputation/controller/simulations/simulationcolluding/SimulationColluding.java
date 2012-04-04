@@ -12,7 +12,13 @@ import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.User;
 import edu.lognet.reputation.view.gui.UserGUI;
 
-
+/**
+ * Represent the colluding attack simulation
+ * we add a group of bad peers in the simulator
+ * at a given time to change the behaviour of the system
+ * 
+ * @author Romain FRITZ, Laurent Vanni, Thao Nguyen
+ */
 public class SimulationColluding extends Simulation2{
 
 	private int numberOfNewPeers; //number of peers of the colluding group

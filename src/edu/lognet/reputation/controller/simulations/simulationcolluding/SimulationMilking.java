@@ -10,6 +10,13 @@ import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.User;
 import edu.lognet.reputation.view.gui.UserGUI;
 
+/**
+ * Represent the milking reputation attack
+ * A group of good peers is adding in the simulator
+ * and change their behaviour at a given time to corrupt the system
+ * 
+ * @author Romain Fritz, Laurent Vanni, Thao Nguyen
+ */
 public class SimulationMilking extends Simulation2 {
 	
 	private int numberOfNewPeers;

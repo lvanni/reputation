@@ -4,6 +4,11 @@ package edu.lognet.reputation.model.user;
 
 import edu.lognet.reputation.model.service.Service;
 
+/**
+ * Represent a machine in the system
+ *
+ * @author Romain Fritz, Laurent Vanni, Thao Nguyen
+ */
 public class Machine extends User {
 	
 	public static double IDEAL_BANDWIDTH = 1024;

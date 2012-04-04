@@ -11,6 +11,11 @@ import edu.lognet.reputation.model.service.Service;
 import edu.lognet.reputation.model.user.Machine;
 import edu.lognet.reputation.model.user.User;
 
+/**
+ * Represent the machine simulation
+ * 
+ * @author Romain Fritz , Laurent Vanni, Thao Nguyen
+ */
 public class SimulationMachine extends Simulation2{
 
 	public SimulationMachine(int interactionNumber, int serviceNumber,
